@@ -1,7 +1,38 @@
 ---
 // Shared homepage content. The nav variant is passed in as a slot by each page,
 // so all three comparison routes share identical body copy and layout.
+import { getCollection } from "astro:content";
 import WorkSection from "./WorkSection.astro";
+
+// Latest writing — pulled from /content/writing/*.md, newest first, drafts hidden.
+// Add a markdown file there to publish; nothing here needs to change.
+const dateFmt = (d: Date) =>
+  `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}`;
+// Social links — replace the # with your real profile URLs (that's the only edit needed).
+const socials = [
+  { label: "LinkedIn", href: "https://linkedin.com/in/sharon-sethi-eraya777" },
+  { label: "GitHub", href: "https://github.com/sharonsara" },
+  { label: "X", href: "https://x.com/sharonsara25" },
+];
+
+// inline icon paths (24x24 viewBox) so we ship no icon library
+const icons: Record<string, string> = {
+  LinkedIn:
+    '<path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.36V9h3.41v1.56h.05c.47-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.55V9h3.57v11.45zM22.22 0H1.77C.8 0 0 .78 0 1.74v20.52C0 23.22.8 24 1.77 24h20.45c.97 0 1.78-.78 1.78-1.74V1.74C24 .78 23.19 0 22.22 0z"/>',
+  GitHub:
+    '<path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2 0 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2 0-.4-.5-1.6.2-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.7 18.3 5 18.3 5c.7 1.6.2 2.8.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.5.3.9 1 .9 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3z"/>',
+  X: '<path d="M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.41l-5.8-7.58-6.64 7.58H.46l8.6-9.83L0 1.15h7.6l5.24 6.93 6.06-6.93zm-1.29 19.5h2.04L6.48 3.24H4.3L17.61 20.65z"/>',
+};
+
+const writing = (await getCollection("writing", ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 3)
+  .map((p) => ({
+    href: `/writing/${p.id}`,
+    date: dateFmt(p.data.date),
+    title: p.data.title,
+    hook: p.data.hook,
+  }));
 
 const experiments = [
   {
@@ -31,23 +62,6 @@ const experiments = [
   },
 ];
 
-const writing = [
-  {
-    date: "2026.05",
-    title: "You don't need to learn to code to use AI well",
-    hook: "The skill that actually matters is describing what you want clearly. Coding is optional.",
-  },
-  {
-    date: "2026.04",
-    title: "“Agentic”, in plain English",
-    hook: "Everyone's saying it. Here's what it means when you strip the buzzword off.",
-  },
-  {
-    date: "2026.03",
-    title: "How I test a brand-new AI tool in 30 minutes",
-    hook: "My exact checklist for deciding whether something is useful or just a demo.",
-  },
-];
 ---
 
 <main>
@@ -130,17 +144,21 @@ const writing = [
       <ul class="wlist">
         {
           writing.map((p) => (
-            <li class="witem">
-              <span class="mono witem__date">{p.date}</span>
-              <span class="witem__body">
-                <span class="witem__title">{p.title}</span>
-                <span class="witem__hook">{p.hook}</span>
-              </span>
-              <span class="witem__arrow" aria-hidden="true">&rarr;</span>
+            <li>
+              <a class="witem" href={p.href}>
+                <span class="mono witem__date">{p.date}</span>
+                <span class="witem__body">
+                  <span class="witem__title">{p.title}</span>
+                  <span class="witem__hook">{p.hook}</span>
+                </span>
+                <span class="witem__arrow" aria-hidden="true">&rarr;</span>
+              </a>
             </li>
           ))
         }
       </ul>
+
+      <a class="wlist__all" href="/writing">All writing &rarr;</a>
     </div>
   </section>
 
@@ -152,12 +170,47 @@ const writing = [
         I take on a few collaborations at a time. Tell me what you're building.
       </p>
       <a class="btn btn--primary" href="mailto:sharonsethi25@gmail.com">Email Sharon</a>
+
+      <ul class="socials" aria-label="Sharon on social media">
+        {
+          socials.map((s) => (
+            <li>
+              <a
+                class="socials__link"
+                href={s.href}
+                aria-label={s.label}
+                target="_blank"
+                rel="me noopener"
+              >
+                <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" set:html={icons[s.label]} />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
     </div>
   </section>
 
   <footer class="site-footer">
     <div class="container site-footer__inner">
       <span class="mono">&copy; 2026 Sharon Sethi</span>
+      <ul class="socials socials--sm" aria-label="Sharon on social media">
+        {
+          socials.map((s) => (
+            <li>
+              <a
+                class="socials__link"
+                href={s.href}
+                aria-label={s.label}
+                target="_blank"
+                rel="me noopener"
+              >
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" set:html={icons[s.label]} />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
       <span class="mono">Built between code and storytelling</span>
     </div>
   </footer>
@@ -342,9 +395,11 @@ const writing = [
     align-items: baseline;
     padding-block: 26px;
     border-top: 1px solid var(--line);
+    text-decoration: none;
+    color: inherit;
     transition: padding-left 0.25s var(--ease);
   }
-  .witem:last-child {
+  .wlist li:last-child .witem {
     border-bottom: 1px solid var(--line);
   }
   @media (prefers-reduced-motion: no-preference) {
@@ -375,6 +430,17 @@ const writing = [
   .witem:hover .witem__arrow {
     color: var(--signal);
   }
+  .wlist__all {
+    display: inline-block;
+    margin-top: 28px;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--signal);
+    text-decoration: none;
+  }
+  .wlist__all:hover {
+    text-decoration: underline;
+  }
 
   /* ---------- CONTACT ---------- */
   .contact {
@@ -394,6 +460,45 @@ const writing = [
     color: var(--slate);
     max-width: 44ch;
     margin-inline: auto;
+  }
+
+  /* ---------- SOCIALS ---------- */
+  .socials {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    gap: 10px;
+  }
+  .contact .socials {
+    margin-top: 32px;
+    justify-content: center;
+  }
+  .socials__link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-pill);
+    color: var(--slate);
+    transition: color 0.2s ease, border-color 0.2s ease, transform 0.18s var(--ease);
+  }
+  .socials__link svg {
+    fill: currentColor;
+  }
+  .socials__link:hover {
+    color: var(--signal);
+    border-color: var(--signal);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .socials__link:hover {
+      transform: translateY(-2px);
+    }
+  }
+  .socials--sm .socials__link {
+    width: 34px;
+    height: 34px;
   }
 
   /* ---------- FOOTER ---------- */
