@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git config *)",
+      "Bash(gh auth *)",
+      "Bash(git init *)",
+      "Bash(git branch *)",
+      "Bash(git remote *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:4321/)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:4321/a)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:4321/b)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:4321/c)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code} /\\\\n\" http://localhost:4321/)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code} /compare\\\\n\" http://localhost:4321/compare)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code} /a\\\\n\" http://localhost:4321/a)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code} /c\\\\n\" http://localhost:4321/c)",
+      "Bash(curl -s http://localhost:4321/)",
+      "Bash(git add *)",
+      "Bash(git commit -q -m ' *)",
+      "Bash(git push *)"
+    ]
+  }
+}

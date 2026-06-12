@@ -1,0 +1,35 @@
+# ============================================================
+#  WORK VIDEOS — edit this file, never the code.
+#  To add a video:
+#    1. Copy the YouTube share link (youtu.be/…, watch?v=…, or shorts/…).
+#    2. Add a block under `videos:` with the 5 fields below.
+#    3. Save. The thumbnail is pulled automatically from the link.
+#  `category:` must match one of the `id:`s in the categories list.
+# ============================================================
+
+# Define your categories here (order = order shown in the filter).
+categories:
+  - id: ai-automation
+    label: Automation
+  - id: agentic-ai
+    label: Agentic AI
+  - id: tutorials
+    label: Tutorials & Explainers
+  - id: tools and demos
+    label: Tools & Demos
+
+# ⚠️ SAMPLE ENTRIES — replace url/title/purpose/tags with your real videos.
+videos:
+- url: https://youtu.be/yPfjla6uxvg
+  title: Manus Tells You If LLMs Are Sending You Traffic
+  purpose: Use Manus to automatically check whether AI tools like ChatGPT and Claude
+    are recommending your website — so you know if you're getting LLM-driven traffic
+    without guessing.
+  tags: [Manus, AI Agents, SEO, LLMs]
+  category: tools and demos
+- url: https://youtu.be/W6TLHFXGSs8
+  title: 5 Steps to Set Up Your First Agentic AI System From Zero
+  purpose: Walks through the five-step framework most builders skip when starting an agentic AI system, so you avoid the setup mistakes that cause most AI projects to fail.
+  tags: [AI Agents, Automation, AI]
+  category: agentic-ai
+

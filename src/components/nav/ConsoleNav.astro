@@ -1,0 +1,115 @@
+---
+// Variant A — "Console / orchestration channels"
+// Each nav item is a channel strip. The active channel's level rides up in signal.
+const items = [
+  { id: "home", label: "Home" },
+  { id: "experiments", label: "Experiments" },
+  { id: "writing", label: "Writing" },
+  { id: "translate", label: "About" },
+  { id: "contact", label: "Contact" },
+];
+---
+
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="#home">
+      <span class="dot"></span>
+      Sharon Sethi
+    </a>
+
+    <nav class="cnav" aria-label="Primary">
+      {
+        items.map((it, i) => (
+          <a
+            class="channel"
+            href={`#${it.id}`}
+            data-nav-target={it.id}
+            data-label={it.label}
+            data-index={String(i + 1).padStart(2, "0")}
+          >
+            <span class="track" aria-hidden="true">
+              <span class="fill" />
+            </span>
+            <span class="label">{it.label}</span>
+          </a>
+        ))
+      }
+    </nav>
+  </div>
+</header>
+
+<style>
+  .cnav {
+    display: flex;
+    align-items: flex-end;
+    gap: clamp(12px, 2vw, 22px);
+  }
+  .channel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+    text-decoration: none;
+  }
+  .track {
+    position: relative;
+    width: 32px;
+    height: 26px;
+    background: var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .fill {
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 20%;
+    background: var(--slate);
+    transition: height 0.4s var(--ease), background 0.25s ease;
+  }
+  .channel:hover .fill,
+  .channel:focus-visible .fill {
+    height: 60%;
+  }
+  .channel[data-active] .fill {
+    height: 100%;
+    background: var(--signal);
+  }
+  .label {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--slate);
+    transition: color 0.25s ease;
+    white-space: nowrap;
+  }
+  .channel:hover .label,
+  .channel[data-active] .label {
+    color: var(--ink);
+  }
+  .channel:focus-visible {
+    outline: 2px solid var(--signal);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fill {
+      transition: none;
+    }
+  }
+
+  /* mobile: let the console scroll sideways rather than wrap */
+  @media (max-width: 640px) {
+    .cnav {
+      gap: 14px;
+      overflow-x: auto;
+      max-width: 64vw;
+      padding-bottom: 2px;
+      scrollbar-width: none;
+    }
+    .cnav::-webkit-scrollbar {
+      display: none;
+    }
+  }
+</style>

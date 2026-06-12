@@ -1,0 +1,165 @@
+---
+import "@fontsource-variable/bricolage-grotesque";
+import "@fontsource-variable/geist";
+import "../styles/global.css";
+
+const variants = [
+  {
+    route: "/a",
+    key: "A",
+    name: "Console / orchestration channels",
+    note: "Mixing-desk strips; the active channel's level rides up in signal. Strongest fit for “orchestrator.”",
+  },
+  {
+    route: "/b",
+    key: "B",
+    name: "Signal tuner / frequency index",
+    note: "Tick stations on a baseline; the tuned station snaps up in signal with a live mono readout.",
+  },
+  {
+    route: "/c",
+    key: "C",
+    name: "Lab-notebook index tabs",
+    note: "Physical edge-tabs with section codes; the active tab pulls out with a signal edge. Quietly playful.",
+  },
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nav comparison — Sharon Sethi portfolio</title>
+  </head>
+  <body class="compare">
+    <header class="compare__head">
+      <div class="container">
+        <p class="mono">Internal — pick the signature navigation</p>
+        <h1>Three navigations, one homepage.</h1>
+        <p class="compare__lead">
+          Each frame below is the live homepage with a different nav. Scroll inside a
+          frame to watch the active state move. Open any one full-screen to feel it properly.
+        </p>
+      </div>
+    </header>
+
+    <main class="container compare__grid">
+      {
+        variants.map((v) => (
+          <section class="vcard">
+            <div class="vcard__bar">
+              <span class="vcard__key">{v.key}</span>
+              <div class="vcard__meta">
+                <span class="vcard__name">{v.name}</span>
+                <span class="vcard__note">{v.note}</span>
+              </div>
+              <a class="btn btn--ghost vcard__open" href={v.route} target="_blank">
+                Open full &nearr;
+              </a>
+            </div>
+            <div class="vcard__frame">
+              <iframe src={v.route} title={`Variant ${v.key}`} loading="lazy" />
+            </div>
+          </section>
+        ))
+      }
+    </main>
+
+    <footer class="compare__foot">
+      <div class="container">
+        <span class="mono">Tell me A, B or C — winner becomes the real nav, other two get deleted.</span>
+      </div>
+    </footer>
+
+    <style>
+      .compare {
+        background: var(--paper);
+      }
+      .compare__head {
+        padding-block: clamp(40px, 7vw, 72px) clamp(24px, 4vw, 40px);
+      }
+      .compare__head h1 {
+        margin-top: 16px;
+        font-size: clamp(2rem, 5vw, 3.2rem);
+        max-width: 18ch;
+      }
+      .compare__lead {
+        margin-top: 16px;
+        max-width: 56ch;
+        color: var(--slate);
+      }
+      .compare__grid {
+        display: flex;
+        flex-direction: column;
+        gap: clamp(40px, 6vw, 72px);
+        padding-bottom: 80px;
+      }
+      .vcard {
+        border: 1px solid var(--line);
+        border-radius: var(--radius-surface);
+        overflow: hidden;
+        background: var(--panel);
+      }
+      .vcard__bar {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--line);
+      }
+      .vcard__key {
+        font-family: var(--font-display);
+        font-weight: 600;
+        font-size: 22px;
+        width: 40px;
+        height: 40px;
+        display: grid;
+        place-items: center;
+        background: var(--ink);
+        color: var(--paper);
+        border-radius: 10px;
+        flex: none;
+      }
+      .vcard__meta {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        flex: 1;
+        min-width: 0;
+      }
+      .vcard__name {
+        font-weight: 600;
+        font-size: 16px;
+      }
+      .vcard__note {
+        font-size: 13px;
+        color: var(--slate);
+      }
+      .vcard__open {
+        flex: none;
+        font-size: 13px;
+        padding: 10px 16px;
+      }
+      .vcard__frame {
+        background: var(--paper);
+        height: clamp(520px, 78vh, 760px);
+      }
+      .vcard__frame iframe {
+        width: 100%;
+        height: 100%;
+        border: 0;
+        display: block;
+      }
+      .compare__foot {
+        border-top: 1px solid var(--line);
+        padding-block: 28px;
+      }
+      @media (max-width: 560px) {
+        .vcard__note {
+          display: none;
+        }
+      }
+    </style>
+  </body>
+</html>

@@ -1,0 +1,423 @@
+---
+import fs from "node:fs";
+import yaml from "js-yaml";
+
+// ---- load video data (build-time only; js-yaml is never shipped to client) ----
+type Category = { id: string; label: string };
+type VideoRaw = {
+  url: string;
+  title: string;
+  purpose: string;
+  tags: string[];
+  category: string;
+};
+type Data = { categories: Category[]; videos: VideoRaw[] };
+
+const file = new URL("../../content/videos.yaml", import.meta.url);
+const data = yaml.load(fs.readFileSync(file, "utf-8")) as Data;
+
+// extract the 11-char video id from any common YouTube url shape
+function ytId(url: string): string | null {
+  const m = url.match(/(?:youtu\.be\/|v=|shorts\/|embed\/)([\w-]{11})/);
+  return m ? m[1] : null;
+}
+
+const categories = data.categories ?? [];
+const labelFor = (id: string) =>
+  categories.find((c) => c.id === id)?.label ?? id;
+
+const videos = (data.videos ?? [])
+  .map((v) => ({ ...v, id: ytId(v.url) }))
+  .filter((v) => v.id); // drop anything we can't resolve, rather than break the build
+---
+
+<section id="work" class="section work reveal">
+  <div class="container">
+    <header class="block__head">
+      <h2>Work</h2>
+      <p class="block__lead">
+        Videos I created for my company's channel — produced, edited, and
+        explained by me. Tags show the tools behind each one.
+      </p>
+    </header>
+
+    <!-- category filter (mono tick-stations, echoing the nav signature) -->
+    <div class="wfilter mono" role="group" aria-label="Filter videos by category">
+      <button class="wfilter__btn" data-filter="all" data-active>All</button>
+      {
+        categories.map((c) => (
+          <button class="wfilter__btn" data-filter={c.id}>
+            {c.label}
+          </button>
+        ))
+      }
+    </div>
+
+    <ul class="wkgrid">
+      {
+        videos.map((v) => (
+          <li class="wkcard" data-category={v.category}>
+            <button
+              class="wkcard__play"
+              data-video-id={v.id}
+              data-video-title={v.title}
+              aria-label={`Play: ${v.title}`}
+            >
+              <span class="wkcard__thumb">
+                <img
+                  src={`https://i.ytimg.com/vi/${v.id}/hqdefault.jpg`}
+                  alt=""
+                  width="480"
+                  height="360"
+                  loading="lazy"
+                />
+                <span class="wkcard__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" width="22" height="22">
+                    <path d="M8 5v14l11-7z" fill="currentColor" />
+                  </svg>
+                </span>
+              </span>
+            </button>
+
+            <div class="wkcard__body">
+              <span class="mono wkcard__cat">{labelFor(v.category)}</span>
+              <h3 class="wkcard__title">{v.title}</h3>
+              <p class="wkcard__purpose">{v.purpose}</p>
+              <ul class="wkcard__tags">
+                {v.tags?.map((t) => <li class="wktag">{t}</li>)}
+              </ul>
+              <a
+                class="wkcard__yt"
+                href={`https://www.youtube.com/watch?v=${v.id}`}
+                target="_blank"
+                rel="noopener"
+              >
+                Watch on YouTube &nearr;
+              </a>
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <!-- single reusable modal; iframe is injected only on click -->
+  <div class="wkmodal" data-modal hidden>
+    <div class="wkmodal__backdrop" data-modal-close></div>
+    <div class="wkmodal__dialog" role="dialog" aria-modal="true" aria-label="Video player">
+      <button class="wkmodal__close" data-modal-close aria-label="Close video">
+        <svg viewBox="0 0 24 24" width="22" height="22">
+          <path
+            d="M6 6l12 12M18 6L6 18"
+            stroke="currentColor"
+            stroke-width="2"
+            fill="none"
+            stroke-linecap="round"
+          ></path>
+        </svg>
+      </button>
+      <div class="wkmodal__frame" data-modal-frame></div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .work {
+    padding-block: clamp(48px, 8vw, 96px);
+  }
+
+  /* ---- category filter ---- */
+  .wfilter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: clamp(24px, 4vw, 40px);
+  }
+  .wfilter__btn {
+    font: inherit;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--slate);
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-pill);
+    padding: 8px 14px;
+    cursor: pointer;
+    transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  }
+  .wfilter__btn:hover {
+    color: var(--ink);
+    border-color: var(--ink);
+  }
+  .wfilter__btn[data-active] {
+    color: var(--paper);
+    background: var(--ink);
+    border-color: var(--ink);
+  }
+  .wfilter__btn:focus-visible {
+    outline: 2px solid var(--signal);
+    outline-offset: 2px;
+  }
+
+  /* ---- grid (image-led cards; adapts to count, distinct from Experiments) ---- */
+  .wkgrid {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 22px;
+  }
+  .wkcard {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .wkcard[hidden] {
+    display: none;
+  }
+
+  .wkcard__play {
+    display: block;
+    width: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    border-radius: var(--radius-surface);
+  }
+  .wkcard__thumb {
+    position: relative;
+    display: block;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: var(--radius-surface);
+    border: 1px solid var(--line);
+    background: var(--panel);
+  }
+  .wkcard__thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s var(--ease);
+  }
+  .wkcard__icon {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 54px;
+    height: 54px;
+    display: grid;
+    place-items: center;
+    color: #fff;
+    background: var(--signal);
+    border-radius: 50%;
+    padding-left: 3px;
+    box-shadow: 0 6px 20px rgba(23, 24, 26, 0.25);
+    transform: scale(0.92);
+    opacity: 0.95;
+    transition: transform 0.25s var(--ease), opacity 0.25s ease;
+  }
+  .wkcard__play:hover .wkcard__icon,
+  .wkcard__play:focus-visible .wkcard__icon {
+    transform: scale(1);
+    opacity: 1;
+  }
+  .wkcard__play:focus-visible {
+    outline: 2px solid var(--signal);
+    outline-offset: 3px;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .wkcard__play:hover .wkcard__thumb img {
+      transform: scale(1.04);
+    }
+  }
+
+  /* ---- card body ---- */
+  .wkcard__body {
+    padding-top: 16px;
+  }
+  .wkcard__cat {
+    color: var(--signal);
+    font-size: 10px;
+  }
+  .wkcard__title {
+    margin-top: 10px;
+    font-size: 1.2rem;
+    letter-spacing: -0.015em;
+    line-height: 1.15;
+  }
+  .wkcard__purpose {
+    margin-top: 8px;
+    color: var(--slate);
+    font-size: 0.95rem;
+  }
+  .wkcard__tags {
+    list-style: none;
+    padding: 0;
+    margin-top: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+  .wktag {
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.03em;
+    color: var(--ink);
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 4px 9px;
+  }
+  .wkcard__yt {
+    display: inline-block;
+    margin-top: 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--slate);
+    text-decoration: none;
+  }
+  .wkcard__yt:hover {
+    color: var(--ink);
+  }
+
+  /* ---- modal ---- */
+  .wkmodal {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: grid;
+    place-items: center;
+    padding: clamp(16px, 4vw, 48px);
+  }
+  .wkmodal[hidden] {
+    display: none;
+  }
+  .wkmodal__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(23, 24, 26, 0.72);
+    backdrop-filter: blur(3px);
+  }
+  .wkmodal__dialog {
+    position: relative;
+    width: min(960px, 100%);
+  }
+  .wkmodal__frame {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    background: #000;
+    border-radius: var(--radius-surface);
+    overflow: hidden;
+  }
+  .wkmodal__frame iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+  .wkmodal__close {
+    position: absolute;
+    top: -46px;
+    right: 0;
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    color: var(--paper);
+    background: transparent;
+    border: 1px solid rgba(244, 245, 243, 0.4);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  .wkmodal__close:hover {
+    background: rgba(244, 245, 243, 0.15);
+  }
+  .wkmodal__close:focus-visible {
+    outline: 2px solid var(--signal);
+    outline-offset: 2px;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .wkmodal__dialog {
+      animation: modal-in 0.28s var(--ease);
+    }
+  }
+  @keyframes modal-in {
+    from {
+      opacity: 0;
+      transform: translateY(12px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  // ---- category filter ----
+  const section = document.getElementById("work");
+  if (section) {
+    const buttons = Array.from(
+      section.querySelectorAll<HTMLButtonElement>(".wfilter__btn")
+    );
+    const cards = Array.from(
+      section.querySelectorAll<HTMLLIElement>(".wkcard")
+    );
+    buttons.forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const f = btn.dataset.filter!;
+        buttons.forEach((b) =>
+          b.toggleAttribute("data-active", b === btn)
+        );
+        cards.forEach((c) => {
+          const show = f === "all" || c.dataset.category === f;
+          c.toggleAttribute("hidden", !show);
+        });
+      });
+    });
+
+    // ---- lazy modal: iframe injected only on click ----
+    const modal = section.querySelector<HTMLElement>("[data-modal]")!;
+    const frame = section.querySelector<HTMLElement>("[data-modal-frame]")!;
+    const closeBtn = section.querySelector<HTMLButtonElement>(".wkmodal__close")!;
+    let lastFocus: HTMLElement | null = null;
+
+    const open = (id: string, title: string) => {
+      lastFocus = document.activeElement as HTMLElement;
+      const iframe = document.createElement("iframe");
+      iframe.src = `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
+      iframe.title = title;
+      iframe.allow =
+        "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+      iframe.allowFullscreen = true;
+      frame.appendChild(iframe);
+      modal.hidden = false;
+      document.body.style.overflow = "hidden";
+      closeBtn.focus();
+    };
+
+    const close = () => {
+      modal.hidden = true;
+      frame.innerHTML = ""; // remove iframe → stops playback
+      document.body.style.overflow = "";
+      lastFocus?.focus();
+    };
+
+    section.querySelectorAll<HTMLButtonElement>(".wkcard__play").forEach((p) => {
+      p.addEventListener("click", () =>
+        open(p.dataset.videoId!, p.dataset.videoTitle || "Video")
+      );
+    });
+    section
+      .querySelectorAll<HTMLElement>("[data-modal-close]")
+      .forEach((el) => el.addEventListener("click", close));
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && !modal.hidden) close();
+    });
+  }
+</script>

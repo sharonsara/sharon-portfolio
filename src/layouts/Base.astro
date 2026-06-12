@@ -1,0 +1,91 @@
+---
+import "@fontsource-variable/bricolage-grotesque";
+import "@fontsource-variable/geist";
+import "../styles/global.css";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = "Sharon Sethi — agentic AI orchestrator",
+  description = "I test new AI tools the day they drop, then translate what actually matters into plain English. Half engineer, half creator.",
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <title>{title}</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><circle cx='8' cy='8' r='5' fill='%23e8442a'/></svg>" />
+  </head>
+  <body>
+    <slot />
+
+    <script>
+      // Shared scrollspy: marks the nav item for the section currently in view.
+      // Works for all three nav variants (they each style [data-active] differently).
+      const links = Array.from(
+        document.querySelectorAll<HTMLElement>("[data-nav-target]")
+      );
+      if (links.length) {
+        const byId = new Map(links.map((l) => [l.dataset.navTarget!, l]));
+        const readouts = Array.from(
+          document.querySelectorAll<HTMLElement>("[data-readout]")
+        );
+
+        const setActive = (id: string) => {
+          links.forEach((l) =>
+            l.toggleAttribute("data-active", l.dataset.navTarget === id)
+          );
+          const active = byId.get(id);
+          if (active) {
+            const label = active.dataset.label || active.textContent || "";
+            const idx = active.dataset.index || "";
+            readouts.forEach((r) => {
+              r.textContent = idx ? `${label} · ${idx}` : label;
+            });
+          }
+        };
+
+        const sections = Array.from(
+          document.querySelectorAll<HTMLElement>("section[id]")
+        ).filter((s) => byId.has(s.id));
+
+        let current = "";
+        const visible = new Map<string, number>();
+        const io = new IntersectionObserver(
+          (entries) => {
+            for (const e of entries) {
+              visible.set(
+                (e.target as HTMLElement).id,
+                e.isIntersecting ? e.intersectionRatio : 0
+              );
+            }
+            let best = current;
+            let bestRatio = 0;
+            visible.forEach((ratio, id) => {
+              if (ratio > bestRatio) {
+                bestRatio = ratio;
+                best = id;
+              }
+            });
+            if (best && best !== current) {
+              current = best;
+              setActive(best);
+            }
+          },
+          { rootMargin: "-45% 0px -45% 0px", threshold: [0, 0.25, 0.5, 1] }
+        );
+        sections.forEach((s) => io.observe(s));
+
+        // initial state
+        setActive(sections[0]?.id || "");
+      }
+    </script>
+  </body>
+</html>

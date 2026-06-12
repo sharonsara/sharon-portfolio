@@ -1,0 +1,112 @@
+---
+// Variant C — "Lab-notebook index tabs"
+// Physical edge-tabs with mono section codes; the active tab pulls out with a signal edge.
+const items = [
+  { id: "home", label: "Home", code: "HM" },
+  { id: "experiments", label: "Experiments", code: "EX" },
+  { id: "writing", label: "Writing", code: "WR" },
+  { id: "translate", label: "About", code: "AB" },
+  { id: "contact", label: "Contact", code: "CN" },
+];
+---
+
+<header class="site-header site-header--tabs">
+  <div class="container">
+    <a class="brand" href="#home">
+      <span class="dot"></span>
+      Sharon Sethi
+    </a>
+
+    <nav class="bnav" aria-label="Primary">
+      {
+        items.map((it, i) => (
+          <a
+            class="tab"
+            href={`#${it.id}`}
+            data-nav-target={it.id}
+            data-label={it.label}
+            data-index={String(i + 1).padStart(2, "0")}
+          >
+            <span class="tab__code mono">{it.code}</span>
+            <span class="tab__label">{it.label}</span>
+          </a>
+        ))
+      }
+    </nav>
+  </div>
+</header>
+
+<style>
+  /* the tabs sit on the header's bottom border like notebook edge-tabs */
+  .bnav {
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
+    align-self: flex-end;
+    margin-bottom: -1px; /* overlap the header border so active tab opens to page */
+  }
+  .tab {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 8px;
+    text-decoration: none;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-bottom: none;
+    border-radius: 9px 9px 0 0;
+    padding: 9px 14px;
+    color: var(--slate);
+    transform: translateY(5px);
+    transition: transform 0.3s var(--ease), background 0.25s ease,
+      color 0.25s ease, border-color 0.25s ease;
+  }
+  .tab__code {
+    font-size: 9.5px;
+    letter-spacing: 0.12em;
+    color: var(--slate);
+    transition: color 0.25s ease;
+  }
+  .tab__label {
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+  }
+  .tab:hover,
+  .tab:focus-visible {
+    transform: translateY(2px);
+    color: var(--ink);
+  }
+  .tab[data-active] {
+    background: var(--paper);
+    color: var(--ink);
+    transform: translateY(0);
+    border-color: var(--line);
+    border-top: 2px solid var(--signal);
+  }
+  .tab[data-active] .tab__code {
+    color: var(--signal);
+  }
+  .tab:focus-visible {
+    outline: 2px solid var(--signal);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .tab {
+      transition: none;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .tab__label {
+      display: none;
+    }
+    .tab {
+      padding: 10px 12px;
+    }
+    .tab__code {
+      font-size: 11px;
+    }
+  }
+</style>

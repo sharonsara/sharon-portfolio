@@ -1,0 +1,138 @@
+---
+// Variant B — "Signal tuner / frequency index"
+// Tabs are stations along a baseline; the tuned station ticks up in signal,
+// and a mono readout (updated by the shared scrollspy) shows the current station.
+const items = [
+  { id: "home", label: "Home" },
+  { id: "experiments", label: "Experiments" },
+  { id: "work", label: "Work" },
+  { id: "writing", label: "Writing" },
+  { id: "translate", label: "About" },
+  { id: "contact", label: "Contact" },
+];
+---
+
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="#home">
+      <span class="dot"></span>
+      Sharon Sethi
+    </a>
+
+    <div class="tuner-wrap">
+      <span class="mono readout" data-readout>Home · 01</span>
+      <nav class="tnav" aria-label="Primary">
+        {
+          items.map((it, i) => (
+            <a
+              class="station"
+              href={`#${it.id}`}
+              data-nav-target={it.id}
+              data-label={it.label}
+              data-index={String(i + 1).padStart(2, "0")}
+            >
+              {it.label}
+            </a>
+          ))
+        }
+      </nav>
+    </div>
+  </div>
+</header>
+
+<style>
+  .tuner-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+  }
+  .readout {
+    color: var(--signal);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+  }
+  .tnav {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: clamp(14px, 2.4vw, 30px);
+    padding-bottom: 13px;
+  }
+  /* the dial baseline */
+  .tnav::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: var(--line);
+  }
+  .station {
+    position: relative;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--slate);
+    transition: color 0.25s ease;
+    white-space: nowrap;
+  }
+  /* the tick under each station */
+  .station::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -13px;
+    width: 1px;
+    height: 7px;
+    background: var(--line);
+    transform: translateX(-50%);
+    transition: height 0.3s var(--ease), background 0.3s ease, width 0.3s ease;
+  }
+  .station:hover,
+  .station:focus-visible {
+    color: var(--ink);
+  }
+  .station:hover::after,
+  .station:focus-visible::after {
+    height: 11px;
+    background: var(--slate);
+  }
+  .station[data-active] {
+    color: var(--ink);
+  }
+  .station[data-active]::after {
+    height: 14px;
+    width: 2px;
+    background: var(--signal);
+  }
+  .station:focus-visible {
+    outline: 2px solid var(--signal);
+    outline-offset: 4px;
+    border-radius: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .station::after {
+      transition: none;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .readout {
+      display: none;
+    }
+    .tnav {
+      gap: 16px;
+      overflow-x: auto;
+      max-width: 66vw;
+      scrollbar-width: none;
+    }
+    .tnav::-webkit-scrollbar {
+      display: none;
+    }
+  }
+</style>
