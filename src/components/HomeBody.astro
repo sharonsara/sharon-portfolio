@@ -1,13 +1,17 @@
 ---
-// Shared homepage content. The nav variant is passed in as a slot by each page,
-// so all three comparison routes share identical body copy and layout.
-import { getCollection } from "astro:content";
+// Shared homepage body. The nav variant is passed in as a slot by each page.
+// Copy comes from the i18n dictionary; experiments + writing come from
+// /content. Pass `lang` to render the English (/) or Thai (/th) version.
 import WorkSection from "./WorkSection.astro";
+import { useTranslations, localizePath, type Lang } from "../i18n/ui";
+import { loadExperiments, getWriting } from "../lib/content";
 
-// Latest writing — pulled from /content/writing/*.md, newest first, drafts hidden.
-// Add a markdown file there to publish; nothing here needs to change.
-const dateFmt = (d: Date) =>
-  `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}`;
+interface Props {
+  lang?: Lang;
+}
+const { lang = "en" } = Astro.props;
+const t = useTranslations(lang);
+
 // Social links — replace the # with your real profile URLs (that's the only edit needed).
 const socials = [
   { label: "LinkedIn", href: "https://linkedin.com/in/sharon-sethi-eraya777" },
@@ -24,44 +28,9 @@ const icons: Record<string, string> = {
   X: '<path d="M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.41l-5.8-7.58-6.64 7.58H.46l8.6-9.83L0 1.15h7.6l5.24 6.93 6.06-6.93zm-1.29 19.5h2.04L6.48 3.24H4.3L17.61 20.65z"/>',
 };
 
-const writing = (await getCollection("writing", ({ data }) => !data.draft))
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
-  .slice(0, 3)
-  .map((p) => ({
-    href: `/writing/${p.id}`,
-    date: dateFmt(p.data.date),
-    title: p.data.title,
-    hook: p.data.hook,
-  }));
-
-const experiments = [
-  {
-    tag: "AGENTS",
-    title: "Building a 5-agent research crew with the Claude Agent SDK",
-    takeaway:
-      "Splitting one big prompt into specialised agents cut my error rate hard. Here's when orchestration actually beats a single model — and when it's just overhead.",
-    featured: true,
-  },
-  {
-    tag: "COMPUTER USE",
-    title: "I let a model drive my browser for a week",
-    takeaway:
-      "Promising, not magic. It nailed repetitive forms and fell apart on anything ambiguous. A plain-English guide to where it helps today.",
-  },
-  {
-    tag: "VOICE",
-    title: "Real-time voice agents that don't sound like robots",
-    takeaway:
-      "Latency is the whole game. What I changed to get a back-and-forth that feels like a phone call, not a walkie-talkie.",
-  },
-  {
-    tag: "RAG",
-    title: "Why my first RAG setup lied with total confidence",
-    takeaway:
-      "Retrieval was fine — the prompt wasn't. The two fixes that stopped the hallucinations, explained without the jargon.",
-  },
-];
-
+const experiments = loadExperiments(lang);
+const writing = (await getWriting(lang)).slice(0, 3);
+const writingIndexHref = localizePath("/writing", lang);
 ---
 
 <main>
@@ -69,18 +38,15 @@ const experiments = [
   <section id="home" class="section hero reveal">
     <div class="container hero__grid">
       <div class="hero__copy">
-        <p class="mono hero__eyebrow">Agentic AI orchestrator</p>
+        <p class="mono hero__eyebrow">{t.hero.eyebrow}</p>
         <h1 class="hero__title">
-          I break in the newest AI tools, then translate them into
-          <span class="hero__mark">plain English</span>.
+          {t.hero.titleLead}
+          <span class="hero__mark">{t.hero.titleMark}</span>{t.hero.titleTail}
         </h1>
-        <p class="hero__sub">
-          Half engineer, half creator. I orchestrate AI systems and write about
-          what actually matters — so you don't have to decode the hype.
-        </p>
+        <p class="hero__sub">{t.hero.sub}</p>
         <div class="hero__cta">
-          <a class="btn btn--primary" href="#experiments">Read the experiments</a>
-          <a class="btn btn--ghost" href="#writing">Browse the writing</a>
+          <a class="btn btn--primary" href="#experiments">{t.hero.ctaPrimary}</a>
+          <a class="btn btn--ghost" href="#writing">{t.hero.ctaGhost}</a>
         </div>
       </div>
 
@@ -100,10 +66,8 @@ const experiments = [
   <section id="experiments" class="section block reveal">
     <div class="container">
       <header class="block__head">
-        <h2>Selected experiments</h2>
-        <p class="block__lead">
-          Tools I've put real hours into, each with the one takeaway worth keeping.
-        </p>
+        <h2>{t.experiments.heading}</h2>
+        <p class="block__lead">{t.experiments.lead}</p>
       </header>
 
       <div class="xgrid">
@@ -113,7 +77,7 @@ const experiments = [
               <p class="mono xcard__tag">{x.tag}</p>
               <h3 class="xcard__title">{x.title}</h3>
               <p class="xcard__takeaway">{x.takeaway}</p>
-              <span class="xcard__more">Read the experiment &rarr;</span>
+              <span class="xcard__more">{t.experiments.more} &rarr;</span>
             </article>
           ))
         }
@@ -122,13 +86,13 @@ const experiments = [
   </section>
 
   <!-- WORK (videos made for company channel) -->
-  <WorkSection />
+  <WorkSection lang={lang} />
 
   <!-- TRANSLATION STRIP -->
   <section id="translate" class="section strip reveal">
     <div class="container">
       <p class="strip__line">
-        I translate AI from <em>engineer-speak</em> into language anyone can use.
+        {t.strip.lead} <em>{t.strip.em}</em> {t.strip.tail}
       </p>
     </div>
   </section>
@@ -137,8 +101,8 @@ const experiments = [
   <section id="writing" class="section block reveal">
     <div class="container">
       <header class="block__head">
-        <h2>Latest writing</h2>
-        <p class="block__lead">Short reads. No jargon. Written like I'd explain it over coffee.</p>
+        <h2>{t.writing.heading}</h2>
+        <p class="block__lead">{t.writing.lead}</p>
       </header>
 
       <ul class="wlist">
@@ -158,18 +122,16 @@ const experiments = [
         }
       </ul>
 
-      <a class="wlist__all" href="/writing">All writing &rarr;</a>
+      <a class="wlist__all" href={writingIndexHref}>{t.writing.all} &rarr;</a>
     </div>
   </section>
 
   <!-- CONTACT -->
   <section id="contact" class="section contact reveal">
     <div class="container contact__inner">
-      <h2 class="contact__title">Working on something with AI in it?</h2>
-      <p class="contact__sub">
-        I take on a few collaborations at a time. Tell me what you're building.
-      </p>
-      <a class="btn btn--primary" href="mailto:sharonsethi25@gmail.com">Email Sharon</a>
+      <h2 class="contact__title">{t.contact.title}</h2>
+      <p class="contact__sub">{t.contact.sub}</p>
+      <a class="btn btn--primary" href="mailto:sharonsethi25@gmail.com">{t.contact.email}</a>
 
       <ul class="socials" aria-label="Sharon on social media">
         {
@@ -193,7 +155,7 @@ const experiments = [
 
   <footer class="site-footer">
     <div class="container site-footer__inner">
-      <span class="mono">&copy; 2026 Sharon Sethi</span>
+      <span class="mono">{t.footer.copyright}</span>
       <ul class="socials socials--sm" aria-label="Sharon on social media">
         {
           socials.map((s) => (
@@ -211,7 +173,7 @@ const experiments = [
           ))
         }
       </ul>
-      <span class="mono">Built between code and storytelling</span>
+      <span class="mono">{t.footer.tagline}</span>
     </div>
   </footer>
 </main>
