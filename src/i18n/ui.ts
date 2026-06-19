@@ -42,7 +42,7 @@ const strings = {
       languageLabel: "Language",
     },
     hero: {
-      eyebrow: "Agentic AI orchestrator · Bangkok",
+      eyebrow: "I'm Sharon Sethi, an Agentic AI Orchestrator based in Bangkok.",
       titleLead: "I try the latest AI tools, then share what they do in a language",
       titleMark: "anyone can understand",
       titleTail: ". In minutes, not in hours.",
@@ -110,7 +110,7 @@ const strings = {
       languageLabel: "ภาษา",
     },
     hero: {
-      eyebrow: "ผู้ควบคุมระบบ AI เชิงเอเจนต์ · กรุงเทพฯ",
+      eyebrow: "ฉันชื่อ Sharon Sethi ผู้ควบคุมระบบ AI เชิงเอเจนต์ อยู่ที่กรุงเทพฯ",
       titleLead: "ฉันลองเครื่องมือ AI ใหม่ล่าสุด แล้วเล่าให้ฟังว่ามันทำอะไรได้ ด้วย",
       titleMark: "ภาษาที่ทุกคนเข้าใจ",
       titleTail: " — ในไม่กี่นาที ไม่ใช่เป็นชั่วโมง",

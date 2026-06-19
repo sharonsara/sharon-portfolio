@@ -40,7 +40,7 @@ const writingIndexHref = localizePath("/writing", lang);
   <section id="home" class="section hero reveal">
     <div class="container hero__grid">
       <div class="hero__copy">
-        <p class="mono hero__eyebrow">{t.hero.eyebrow}</p>
+        <p class="hero__eyebrow">{t.hero.eyebrow}</p>
         <h1 class="hero__title">
           {t.hero.titleLead}
           <span class="hero__mark">{t.hero.titleMark}</span>{t.hero.titleTail}
@@ -188,7 +188,9 @@ const writingIndexHref = localizePath("/writing", lang);
     gap: clamp(32px, 6vw, 72px);
   }
   .hero__eyebrow {
-    margin-bottom: 22px;
+    margin-bottom: 20px;
+    font-size: clamp(0.95rem, 1.5vw, 1.1rem);
+    color: var(--slate);
   }
   .hero__title {
     font-size: clamp(1.9rem, 4.4vw, 3.3rem);
