@@ -1,8 +1,7 @@
 ---
 // Variant B — "Signal tuner / frequency index"
-// Tabs are stations along a baseline; the tuned station ticks up in signal,
-// and a mono readout (updated by the shared scrollspy) shows the current station.
-import { useTranslations, localizePath, otherLang, type Lang } from "../../i18n/ui";
+// Tabs are stations along a baseline; the tuned station ticks up in signal.
+import { useTranslations, type Lang } from "../../i18n/ui";
 
 interface Props {
   lang?: Lang;
@@ -13,14 +12,11 @@ const t = useTranslations(lang);
 const items = [
   { id: "home", label: t.nav.home },
   { id: "experiments", label: t.nav.experiments },
+  { id: "tools", label: t.nav.tools },
   { id: "work", label: t.nav.work },
   { id: "writing", label: t.nav.writing },
-  { id: "translate", label: t.nav.about },
   { id: "contact", label: t.nav.contact },
 ];
-
-const other = otherLang(lang);
-const toggleHref = localizePath("/", other);
 ---
 
 <header class="site-header">
@@ -31,19 +27,6 @@ const toggleHref = localizePath("/", other);
     </a>
 
     <div class="tuner-wrap">
-      <div class="tuner-top">
-        <span class="mono readout" data-readout>{items[0].label} · 01</span>
-        <a
-          class="langtoggle mono"
-          href={toggleHref}
-          hreflang={other}
-          aria-label={t.nav.languageLabel}
-        >
-          <span class:list={["langtoggle__opt", { "is-on": lang === "en" }]}>EN</span>
-          <span class="langtoggle__sep" aria-hidden="true">/</span>
-          <span class:list={["langtoggle__opt", { "is-on": lang === "th" }]}>TH</span>
-        </a>
-      </div>
       <nav class="tnav" aria-label="Primary">
         {
           items.map((it, i) => (
@@ -69,43 +52,6 @@ const toggleHref = localizePath("/", other);
     flex-direction: column;
     align-items: flex-end;
     gap: 8px;
-  }
-  .tuner-top {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-  }
-  .readout {
-    color: var(--signal);
-    font-size: 10px;
-    letter-spacing: 0.16em;
-  }
-  .langtoggle {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 11px;
-    letter-spacing: 0.1em;
-    text-decoration: none;
-    color: var(--slate);
-    padding: 3px 9px;
-    border: 1px solid var(--line);
-    border-radius: var(--radius-pill);
-    transition: border-color 0.2s ease;
-  }
-  .langtoggle:hover {
-    border-color: var(--ink);
-  }
-  .langtoggle:focus-visible {
-    outline: 2px solid var(--signal);
-    outline-offset: 3px;
-  }
-  .langtoggle__opt.is-on {
-    color: var(--ink);
-    font-weight: 600;
-  }
-  .langtoggle__sep {
-    color: var(--line);
   }
   .tnav {
     position: relative;
@@ -177,9 +123,6 @@ const toggleHref = localizePath("/", other);
   }
 
   @media (max-width: 640px) {
-    .readout {
-      display: none;
-    }
     .tnav {
       gap: 16px;
       overflow-x: auto;

@@ -6,7 +6,7 @@ import {
   otherLang,
   type Lang,
 } from "../i18n/ui";
-import { getWriting } from "../lib/content";
+import { listArticles } from "../lib/articles";
 
 interface Props {
   lang?: Lang;
@@ -15,7 +15,7 @@ const { lang = "en" } = Astro.props;
 const t = useTranslations(lang);
 const other = otherLang(lang);
 
-const posts = await getWriting(lang);
+const posts = await listArticles(lang);
 const homeHref = localizePath("/", lang);
 const altHref = localizePath("/writing", other);
 ---
@@ -29,14 +29,7 @@ const altHref = localizePath("/writing", other);
   <header class="bar">
     <div class="container bar__inner">
       <a class="brand" href={homeHref}><span class="dot"></span>Sharon Sethi</a>
-      <div class="bar__right">
-        <a class="bar__back" href={`${homeHref}#writing`}>&larr; {t.writing.back}</a>
-        <a class="langtoggle mono" href={altHref} hreflang={other} aria-label={t.nav.languageLabel}>
-          <span class:list={["langtoggle__opt", { "is-on": lang === "en" }]}>EN</span>
-          <span class="langtoggle__sep" aria-hidden="true">/</span>
-          <span class:list={["langtoggle__opt", { "is-on": lang === "th" }]}>TH</span>
-        </a>
-      </div>
+      <a class="bar__back" href={`${homeHref}#writing`}>&larr; {t.writing.back}</a>
     </div>
   </header>
 
@@ -47,22 +40,26 @@ const altHref = localizePath("/writing", other);
         <h1>{t.writing.indexTitle}</h1>
       </header>
 
-      <ul class="wlist">
-        {
-          posts.map((p) => (
-            <li>
-              <a class="witem" href={p.href}>
-                <span class="mono witem__date">{p.date}</span>
-                <span class="witem__body">
-                  <span class="witem__title">{p.title}</span>
-                  <span class="witem__hook">{p.hook}</span>
-                </span>
-                <span class="witem__arrow" aria-hidden="true">&rarr;</span>
-              </a>
-            </li>
-          ))
-        }
-      </ul>
+      {
+        posts.length === 0 ? (
+          <p class="empty">{t.writing.empty}</p>
+        ) : (
+          <ul class="wlist">
+            {posts.map((p) => (
+              <li>
+                <a class="witem" href={p.href}>
+                  <span class="mono witem__date">{p.date}</span>
+                  <span class="witem__body">
+                    <span class="witem__title">{p.title}</span>
+                    <span class="witem__hook">{p.hook}</span>
+                  </span>
+                  <span class="witem__arrow" aria-hidden="true">&rarr;</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
     </div>
   </main>
 
@@ -86,11 +83,6 @@ const altHref = localizePath("/writing", other);
     align-items: center;
     justify-content: space-between;
   }
-  .bar__right {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
   .bar__back {
     font-size: 14px;
     color: var(--slate);
@@ -98,33 +90,6 @@ const altHref = localizePath("/writing", other);
   }
   .bar__back:hover {
     color: var(--ink);
-  }
-  .langtoggle {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 11px;
-    letter-spacing: 0.1em;
-    text-decoration: none;
-    color: var(--slate);
-    padding: 3px 9px;
-    border: 1px solid var(--line);
-    border-radius: var(--radius-pill);
-    transition: border-color 0.2s ease;
-  }
-  .langtoggle:hover {
-    border-color: var(--ink);
-  }
-  .langtoggle:focus-visible {
-    outline: 2px solid var(--signal);
-    outline-offset: 3px;
-  }
-  .langtoggle__opt.is-on {
-    color: var(--ink);
-    font-weight: 600;
-  }
-  .langtoggle__sep {
-    color: var(--line);
   }
   .wrap {
     max-width: 760px;
@@ -136,6 +101,11 @@ const altHref = localizePath("/writing", other);
     margin-top: 16px;
     font-size: clamp(2rem, 5vw, 3rem);
     max-width: 22ch;
+  }
+  .empty {
+    color: var(--slate);
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
   }
   .wlist {
     list-style: none;

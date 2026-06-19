@@ -4,8 +4,7 @@
 // ============================================================
 import fs from "node:fs";
 import yaml from "js-yaml";
-import { getCollection } from "astro:content";
-import { localizePath, type Lang } from "../i18n/ui";
+import { type Lang } from "../i18n/ui";
 
 // ---- short date label, e.g. 2026.05 ----
 export const dateFmt = (d: Date) =>
@@ -43,25 +42,29 @@ export function loadExperiments(lang: Lang): Experiment[] {
   return list.sort((a, b) => Number(b.featured) - Number(a.featured));
 }
 
-// ---- writing (content/writing/{en,th}/*.md) ----
-export type WritingItem = {
-  slug: string;
-  date: string;
-  title: string;
-  hook: string;
-  href: string;
+// ---- favorite tools / "my rig" (content/tools.yaml) ----
+// Tool copy stays in English on both sites (by request); only the
+// section heading/lead are translated, and those live in i18n/ui.ts.
+export type ToolUse = "daily" | "weekly" | "testing";
+
+export type Tool = {
+  name: string;
+  model?: string;
+  for: string;
+  why: string;
+  use: ToolUse;
 };
 
-export async function getWriting(lang: Lang): Promise<WritingItem[]> {
-  const collection = lang === "th" ? "writingTh" : "writingEn";
-  const posts = await getCollection(collection, ({ data }) => !data.draft);
-  return posts
-    .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
-    .map((p) => ({
-      slug: p.id,
-      date: dateFmt(p.data.date),
-      title: p.data.title,
-      hook: p.data.hook,
-      href: localizePath(`/writing/${p.id}`, lang),
-    }));
+export function loadTools(): Tool[] {
+  const file = new URL("../../content/tools.yaml", import.meta.url);
+  const data = yaml.load(fs.readFileSync(file, "utf-8")) as {
+    tools: Tool[];
+  };
+  return (data.tools ?? []).map((x) => ({
+    name: x.name,
+    model: x.model,
+    for: x.for,
+    why: x.why,
+    use: (["daily", "weekly", "testing"].includes(x.use) ? x.use : "weekly") as ToolUse,
+  }));
 }

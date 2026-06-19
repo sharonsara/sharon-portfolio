@@ -130,6 +130,21 @@ const videos = (data.videos ?? [])
     padding-block: clamp(48px, 8vw, 96px);
   }
 
+  /* the shared .block__head styles are scoped to HomeBody and don't reach
+     this component, so match them here (heading size + lead) */
+  .block__head {
+    max-width: 60ch;
+    margin-bottom: clamp(32px, 5vw, 56px);
+  }
+  .block__head h2 {
+    font-size: clamp(1.9rem, 3.6vw, 2.8rem);
+  }
+  .block__lead {
+    margin-top: 14px;
+    color: var(--slate);
+    max-width: 52ch;
+  }
+
   /* ---- category filter ---- */
   .wfilter {
     display: flex;

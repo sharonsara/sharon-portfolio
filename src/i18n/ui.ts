@@ -34,6 +34,7 @@ const strings = {
     nav: {
       home: "Home",
       experiments: "Experiments",
+      tools: "Tools",
       work: "Work",
       writing: "Writing",
       about: "About",
@@ -53,6 +54,11 @@ const strings = {
       heading: "Selected experiments",
       lead: "Tools I've put real hours into, each with the one takeaway worth keeping.",
       more: "Read the experiment",
+      empty: "Coming soon.",
+    },
+    rig: {
+      heading: "AI tools I love",
+      empty: "Setting up the board.",
     },
     work: {
       heading: "Work",
@@ -67,7 +73,8 @@ const strings = {
     },
     writing: {
       heading: "Latest writing",
-      lead: "Short reads. No jargon. Written like I'd explain it over coffee.",
+      lead: "Short reads. Written like I'd explain it over coffee.",
+      empty: "First posts are on the way.",
       all: "All writing",
       indexKicker: "Writing",
       indexTitle: "No jargon. Written like I'd explain it over coffee.",
@@ -78,12 +85,11 @@ const strings = {
     },
     contact: {
       title: "Working on something with AI in it?",
-      sub: "I take on a few collaborations at a time. Tell me what you're building.",
+      sub: "Let's build something together!",
       email: "Email Sharon",
     },
     footer: {
       copyright: "© 2026 Sharon Sethi",
-      tagline: "Built between code and storytelling",
     },
   },
 
@@ -96,6 +102,7 @@ const strings = {
     nav: {
       home: "หน้าแรก",
       experiments: "การทดลอง",
+      tools: "เครื่องมือ",
       work: "ผลงาน",
       writing: "งานเขียน",
       about: "เกี่ยวกับ",
@@ -115,6 +122,11 @@ const strings = {
       heading: "การทดลองที่คัดมา",
       lead: "เครื่องมือที่ฉันลงมือใช้จริงเป็นชั่วโมง ๆ พร้อมข้อสรุปหนึ่งข้อที่ควรเก็บไว้",
       more: "อ่านการทดลอง",
+      empty: "เร็ว ๆ นี้",
+    },
+    rig: {
+      heading: "เครื่องมือ AI ที่ฉันรัก",
+      empty: "กำลังจัดบอร์ด",
     },
     work: {
       heading: "ผลงาน",
@@ -129,7 +141,8 @@ const strings = {
     },
     writing: {
       heading: "งานเขียนล่าสุด",
-      lead: "อ่านสั้น ๆ ไม่มีศัพท์เทคนิค เขียนเหมือนเล่าให้เพื่อนฟังตอนนั่งจิบกาแฟ",
+      lead: "อ่านสั้น ๆ เขียนเหมือนเล่าให้เพื่อนฟังตอนนั่งจิบกาแฟ",
+      empty: "บทความแรก ๆ กำลังจะมา",
       all: "งานเขียนทั้งหมด",
       indexKicker: "งานเขียน",
       indexTitle: "ไม่มีศัพท์เทคนิค เขียนเหมือนเล่าให้เพื่อนฟังตอนจิบกาแฟ",
@@ -140,12 +153,11 @@ const strings = {
     },
     contact: {
       title: "กำลังทำอะไรที่มี AI อยู่ในนั้นใช่ไหม?",
-      sub: "ฉันรับงานร่วมกันทีละไม่กี่โปรเจกต์ เล่าให้ฟังหน่อยว่าคุณกำลังสร้างอะไรอยู่",
+      sub: "มาสร้างอะไรด้วยกันเถอะ!",
       email: "อีเมลหา Sharon",
     },
     footer: {
       copyright: "© 2026 Sharon Sethi",
-      tagline: "สร้างขึ้นระหว่างโค้ดกับการเล่าเรื่อง",
     },
   },
 } as const;

@@ -1,0 +1,282 @@
+---
+// "My rig" — favorite AI tools as console modules (instrument units).
+// Each tool is a little device: a gauge dial whose needle points to how
+// often it's used, a pulsing status LED, a readout screen for what it's
+// for, and the "why" printed on the faceplate.
+// The gauges sweep up once on load (the section's single motion).
+// Content is editable in /content/tools.yaml — see loadTools().
+import { useTranslations, type Lang } from "../i18n/ui";
+import { loadTools, type ToolUse } from "../lib/content";
+
+interface Props {
+  lang?: Lang;
+}
+const { lang = "en" } = Astro.props;
+const t = useTranslations(lang);
+
+const tools = loadTools();
+
+// gauge fill (0–1) per usage level — drives the dial needle + arc
+const FILL: Record<ToolUse, number> = {
+  daily: 1,
+  weekly: 0.6,
+  testing: 0.25,
+};
+---
+
+<section id="tools" class="section block reveal">
+  <div class="container">
+    <header class="block__head">
+      <h2>{t.rig.heading}</h2>
+    </header>
+
+    {
+      tools.length === 0 ? (
+        <p class="block__empty">{t.rig.empty}</p>
+      ) : (
+        <div class="rig__grid">
+          {tools.map((tool) => (
+            <article class="module" style={`--fill:${FILL[tool.use]}`}>
+              <div class="module__head">
+                <span class="module__led" aria-hidden="true" />
+                <span class="mono module__use">{tool.use}</span>
+                {tool.model && <span class="module__model">{tool.model}</span>}
+              </div>
+
+              <div class="gauge" aria-hidden="true">
+                <span class="gauge__arc" />
+                <span class="gauge__needle" />
+                <span class="gauge__cap">{tool.name.charAt(0)}</span>
+              </div>
+
+              <h3 class="module__name">{tool.name}</h3>
+
+              <p class="screen">
+                <span class="mono screen__label">for</span>
+                <span class="mono screen__val">{tool.for}</span>
+              </p>
+
+              <p class="module__why">{tool.why}</p>
+            </article>
+          ))}
+        </div>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  /* section spacing (the shared .block styles are scoped to HomeBody,
+     so this component sets its own to match — with extra room under
+     the heading so the modules never crowd it) */
+  .block {
+    padding-block: clamp(48px, 8vw, 96px);
+  }
+  .block__head {
+    max-width: 60ch;
+    margin-bottom: clamp(44px, 6vw, 68px);
+  }
+  .block__head h2 {
+    font-size: clamp(1.9rem, 3.6vw, 2.8rem);
+  }
+  .block__empty {
+    color: var(--slate);
+    font-size: 1.1rem;
+  }
+
+  /* animate the gauge fill on load (needs a registered custom prop) */
+  @property --fill {
+    syntax: "<number>";
+    inherits: true;
+    initial-value: 0;
+  }
+
+  /* ---------- THE GRID ---------- */
+  .rig__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(248px, 1fr));
+    gap: 18px;
+    max-width: 760px;
+    margin-inline: auto;
+  }
+
+  /* ---------- A CONSOLE MODULE (faceplate) ---------- */
+  .module {
+    position: relative;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-surface);
+    padding: clamp(20px, 3vw, 28px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: transform 0.25s var(--ease), border-color 0.25s ease;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .module:hover {
+      transform: translateY(-3px);
+    }
+  }
+  .module:hover {
+    border-color: var(--ink);
+  }
+
+  /* top strip: LED + usage + model chip */
+  .module__head {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+  }
+  .module__led {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--signal);
+    box-shadow: 0 0 0 0 rgba(232, 68, 42, 0.45);
+    flex: none;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .module__led {
+      animation: led 2.2s ease-in-out infinite;
+    }
+  }
+  @keyframes led {
+    0%, 100% {
+      box-shadow: 0 0 0 0 rgba(232, 68, 42, 0.5);
+    }
+    50% {
+      box-shadow: 0 0 0 5px rgba(232, 68, 42, 0);
+    }
+  }
+  .module__use {
+    color: var(--slate);
+  }
+  .module__model {
+    margin-left: auto;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--slate);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-pill);
+    padding: 3px 9px;
+  }
+
+  /* ---------- THE GAUGE DIAL ---------- */
+  .gauge {
+    position: relative;
+    width: 116px;
+    height: 116px;
+    margin: clamp(16px, 2.5vw, 22px) 0 clamp(14px, 2vw, 18px);
+  }
+  /* the 270° arc: filled portion in signal, rest in line, gap at bottom */
+  .gauge__arc {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: conic-gradient(
+      from -135deg,
+      var(--signal) 0 calc(var(--fill) * 270deg),
+      var(--line) calc(var(--fill) * 270deg) 270deg,
+      transparent 270deg 360deg
+    );
+    -webkit-mask: radial-gradient(transparent 60%, #000 61%);
+    mask: radial-gradient(transparent 60%, #000 61%);
+  }
+  /* the needle, rotated to the fill position */
+  .gauge__needle {
+    position: absolute;
+    left: 50%;
+    bottom: 50%;
+    width: 2px;
+    height: 42px;
+    margin-left: -1px;
+    background: var(--ink);
+    border-radius: 1px;
+    transform-origin: bottom center;
+    transform: rotate(calc(-135deg + var(--fill) * 270deg));
+  }
+  /* center cap shows the tool's initial */
+  .gauge__cap {
+    position: absolute;
+    inset: 50%;
+    width: 58px;
+    height: 58px;
+    margin: -29px 0 0 -29px;
+    border-radius: 50%;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 24px;
+    color: var(--ink);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .module {
+      animation: sweep 1s var(--ease) backwards;
+    }
+    .module:nth-child(2) {
+      animation-delay: 0.12s;
+    }
+    .module:nth-child(3) {
+      animation-delay: 0.24s;
+    }
+    .module:nth-child(4) {
+      animation-delay: 0.36s;
+    }
+    .module:nth-child(5) {
+      animation-delay: 0.48s;
+    }
+    .module:nth-child(6) {
+      animation-delay: 0.6s;
+    }
+  }
+  @keyframes sweep {
+    from {
+      --fill: 0;
+    }
+  }
+
+  /* ---------- NAMEPLATE + SCREEN + WHY ---------- */
+  .module__name {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(1.4rem, 2.6vw, 1.8rem);
+    letter-spacing: -0.02em;
+  }
+  .screen {
+    margin-top: 14px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+    padding: 9px 12px;
+    background: var(--ink);
+    border-radius: 8px;
+  }
+  .screen__label {
+    color: var(--slate);
+  }
+  .screen__val {
+    color: var(--signal);
+    letter-spacing: 0.06em;
+  }
+  .module__why {
+    margin-top: 16px;
+    color: var(--slate);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    max-width: 30ch;
+    transition: color 0.25s ease;
+  }
+  .module:hover .module__why {
+    color: var(--ink);
+  }
+</style>

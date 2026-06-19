@@ -1,16 +1,16 @@
 ---
-import { getCollection } from "astro:content";
+import { articleKeys, getArticle } from "../../lib/articles";
 import WritingArticle from "../../components/WritingArticle.astro";
 
 export async function getStaticPaths() {
-  const posts = await getCollection("writingEn", ({ data }) => !data.draft);
-  return posts.map((post) => ({
-    params: { slug: post.id },
-    props: { post },
-  }));
+  const keys = await articleKeys("en");
+  const articles = await Promise.all(keys.map((k) => getArticle("en", k)));
+  return articles
+    .filter((a) => a !== null)
+    .map((a) => ({ params: { slug: a!.key }, props: { article: a } }));
 }
 
-const { post } = Astro.props;
+const { article } = Astro.props;
 ---
 
-<WritingArticle lang="en" post={post} />
+<WritingArticle lang="en" article={article} />

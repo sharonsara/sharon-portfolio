@@ -1,6 +1,4 @@
 ---
-import type { CollectionEntry } from "astro:content";
-import { render } from "astro:content";
 import Base from "../layouts/Base.astro";
 import {
   useTranslations,
@@ -8,23 +6,22 @@ import {
   otherLang,
   type Lang,
 } from "../i18n/ui";
+import type { Article } from "../lib/articles";
 
 interface Props {
   lang?: Lang;
-  post: CollectionEntry<"writingEn"> | CollectionEntry<"writingTh">;
+  article: Article;
 }
-const { lang = "en", post } = Astro.props;
+const { lang = "en", article } = Astro.props;
 const t = useTranslations(lang);
 const other = otherLang(lang);
 
-const { Content } = await render(post);
-
 const writingHref = localizePath("/writing", lang);
 const contactHref = `${localizePath("/", lang)}#contact`;
-// the same article in the other language (same filename in the other folder)
-const altHref = localizePath(`/writing/${post.id}`, other);
+// the same article in the other language (only linked when it exists)
+const altHref = localizePath(`/writing/${article.key}`, other);
 
-const longDate = post.data.date.toLocaleDateString(
+const longDate = article.date.toLocaleDateString(
   lang === "th" ? "th-TH" : "en-US",
   { year: "numeric", month: "long", day: "numeric" }
 );
@@ -32,33 +29,24 @@ const longDate = post.data.date.toLocaleDateString(
 
 <Base
   lang={lang}
-  title={`${post.data.title} — Sharon Sethi`}
-  description={post.data.hook}
+  title={`${article.title} — Sharon Sethi`}
+  description={article.hook}
   altHref={altHref}
   altLang={other}
 >
   <header class="bar">
     <div class="container bar__inner">
       <a class="brand" href={localizePath("/", lang)}><span class="dot"></span>Sharon Sethi</a>
-      <div class="bar__right">
-        <a class="bar__back" href={writingHref}>&larr; {t.writing.backAll}</a>
-        <a class="langtoggle mono" href={altHref} hreflang={other} aria-label={t.nav.languageLabel}>
-          <span class:list={["langtoggle__opt", { "is-on": lang === "en" }]}>EN</span>
-          <span class="langtoggle__sep" aria-hidden="true">/</span>
-          <span class:list={["langtoggle__opt", { "is-on": lang === "th" }]}>TH</span>
-        </a>
-      </div>
+      <a class="bar__back" href={writingHref}>&larr; {t.writing.backAll}</a>
     </div>
   </header>
 
   <main class="section">
     <article class="container post">
       <p class="mono post__date">{longDate}</p>
-      <h1 class="post__title">{post.data.title}</h1>
-      <p class="post__hook">{post.data.hook}</p>
-      <div class="prose">
-        <Content />
-      </div>
+      <h1 class="post__title">{article.title}</h1>
+      <p class="post__hook">{article.hook}</p>
+      <div class="prose" set:html={article.html}></div>
     </article>
   </main>
 
@@ -82,11 +70,6 @@ const longDate = post.data.date.toLocaleDateString(
     align-items: center;
     justify-content: space-between;
   }
-  .bar__right {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
   .bar__back {
     font-size: 14px;
     color: var(--slate);
@@ -94,33 +77,6 @@ const longDate = post.data.date.toLocaleDateString(
   }
   .bar__back:hover {
     color: var(--ink);
-  }
-  .langtoggle {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 11px;
-    letter-spacing: 0.1em;
-    text-decoration: none;
-    color: var(--slate);
-    padding: 3px 9px;
-    border: 1px solid var(--line);
-    border-radius: var(--radius-pill);
-    transition: border-color 0.2s ease;
-  }
-  .langtoggle:hover {
-    border-color: var(--ink);
-  }
-  .langtoggle:focus-visible {
-    outline: 2px solid var(--signal);
-    outline-offset: 3px;
-  }
-  .langtoggle__opt.is-on {
-    color: var(--ink);
-    font-weight: 600;
-  }
-  .langtoggle__sep {
-    color: var(--line);
   }
   .post {
     max-width: 680px;
@@ -201,6 +157,25 @@ const longDate = post.data.date.toLocaleDateString(
     margin: 0 0 1.4em;
     color: var(--slate);
     font-style: italic;
+  }
+  .prose :global(table) {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    border-collapse: collapse;
+    margin-bottom: 1.6em;
+    font-size: 0.95em;
+  }
+  .prose :global(th),
+  .prose :global(td) {
+    border: 1px solid var(--line);
+    padding: 10px 14px;
+    text-align: left;
+    vertical-align: top;
+  }
+  .prose :global(thead th) {
+    background: var(--panel);
+    font-weight: 600;
   }
 
   .site-footer {

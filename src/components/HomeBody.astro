@@ -3,8 +3,10 @@
 // Copy comes from the i18n dictionary; experiments + writing come from
 // /content. Pass `lang` to render the English (/) or Thai (/th) version.
 import WorkSection from "./WorkSection.astro";
+import RigSection from "./RigSection.astro";
 import { useTranslations, localizePath, type Lang } from "../i18n/ui";
-import { loadExperiments, getWriting } from "../lib/content";
+import { loadExperiments } from "../lib/content";
+import { listArticles } from "../lib/articles";
 
 interface Props {
   lang?: Lang;
@@ -29,7 +31,7 @@ const icons: Record<string, string> = {
 };
 
 const experiments = loadExperiments(lang);
-const writing = (await getWriting(lang)).slice(0, 3);
+const writing = (await listArticles(lang)).slice(0, 3);
 const writingIndexHref = localizePath("/writing", lang);
 ---
 
@@ -70,32 +72,30 @@ const writingIndexHref = localizePath("/writing", lang);
         <p class="block__lead">{t.experiments.lead}</p>
       </header>
 
-      <div class="xgrid">
-        {
-          experiments.map((x) => (
-            <article class={`xcard${x.featured ? " xcard--featured" : ""}`}>
-              <p class="mono xcard__tag">{x.tag}</p>
-              <h3 class="xcard__title">{x.title}</h3>
-              <p class="xcard__takeaway">{x.takeaway}</p>
-              <span class="xcard__more">{t.experiments.more} &rarr;</span>
-            </article>
-          ))
-        }
-      </div>
+      {
+        experiments.length === 0 ? (
+          <p class="block__empty">{t.experiments.empty}</p>
+        ) : (
+          <div class="xgrid">
+            {experiments.map((x) => (
+              <article class={`xcard${x.featured ? " xcard--featured" : ""}`}>
+                <p class="mono xcard__tag">{x.tag}</p>
+                <h3 class="xcard__title">{x.title}</h3>
+                <p class="xcard__takeaway">{x.takeaway}</p>
+                <span class="xcard__more">{t.experiments.more} &rarr;</span>
+              </article>
+            ))}
+          </div>
+        )
+      }
     </div>
   </section>
+
+  <!-- MY RIG (favorite AI tools as faders) -->
+  <RigSection lang={lang} />
 
   <!-- WORK (videos made for company channel) -->
   <WorkSection lang={lang} />
-
-  <!-- TRANSLATION STRIP -->
-  <section id="translate" class="section strip reveal">
-    <div class="container">
-      <p class="strip__line">
-        {t.strip.lead} <em>{t.strip.em}</em> {t.strip.tail}
-      </p>
-    </div>
-  </section>
 
   <!-- WRITING -->
   <section id="writing" class="section block reveal">
@@ -105,24 +105,30 @@ const writingIndexHref = localizePath("/writing", lang);
         <p class="block__lead">{t.writing.lead}</p>
       </header>
 
-      <ul class="wlist">
-        {
-          writing.map((p) => (
-            <li>
-              <a class="witem" href={p.href}>
-                <span class="mono witem__date">{p.date}</span>
-                <span class="witem__body">
-                  <span class="witem__title">{p.title}</span>
-                  <span class="witem__hook">{p.hook}</span>
-                </span>
-                <span class="witem__arrow" aria-hidden="true">&rarr;</span>
-              </a>
-            </li>
-          ))
-        }
-      </ul>
+      {
+        writing.length === 0 ? (
+          <p class="wlist__empty">{t.writing.empty}</p>
+        ) : (
+          <>
+            <ul class="wlist">
+              {writing.map((p) => (
+                <li>
+                  <a class="witem" href={p.href}>
+                    <span class="mono witem__date">{p.date}</span>
+                    <span class="witem__body">
+                      <span class="witem__title">{p.title}</span>
+                      <span class="witem__hook">{p.hook}</span>
+                    </span>
+                    <span class="witem__arrow" aria-hidden="true">&rarr;</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
 
-      <a class="wlist__all" href={writingIndexHref}>{t.writing.all} &rarr;</a>
+            <a class="wlist__all" href={writingIndexHref}>{t.writing.all} &rarr;</a>
+          </>
+        )
+      }
     </div>
   </section>
 
@@ -155,7 +161,6 @@ const writingIndexHref = localizePath("/writing", lang);
 
   <footer class="site-footer">
     <div class="container site-footer__inner">
-      <span class="mono">{t.footer.copyright}</span>
       <ul class="socials socials--sm" aria-label="Sharon on social media">
         {
           socials.map((s) => (
@@ -173,7 +178,6 @@ const writingIndexHref = localizePath("/writing", lang);
           ))
         }
       </ul>
-      <span class="mono">{t.footer.tagline}</span>
     </div>
   </footer>
 </main>
@@ -266,6 +270,11 @@ const writingIndexHref = localizePath("/writing", lang);
     margin-top: 14px;
     color: var(--slate);
     max-width: 52ch;
+  }
+  .block__empty {
+    color: var(--slate);
+    font-size: 1.1rem;
+    padding-block: 8px;
   }
 
   /* ---------- EXPERIMENTS (asymmetric signal-log, not equal cards) ---------- */
@@ -391,6 +400,11 @@ const writingIndexHref = localizePath("/writing", lang);
   }
   .witem:hover .witem__arrow {
     color: var(--signal);
+  }
+  .wlist__empty {
+    color: var(--slate);
+    padding-block: 8px 4px;
+    border-top: 1px solid var(--line);
   }
   .wlist__all {
     display: inline-block;
