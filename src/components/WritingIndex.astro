@@ -1,0 +1,176 @@
+---
+import Base from "../layouts/Base.astro";
+import {
+  useTranslations,
+  localizePath,
+  otherLang,
+  type Lang,
+} from "../i18n/ui";
+import { listArticles } from "../lib/articles";
+
+interface Props {
+  lang?: Lang;
+}
+const { lang = "en" } = Astro.props;
+const t = useTranslations(lang);
+const other = otherLang(lang);
+
+const posts = await listArticles(lang);
+const homeHref = localizePath("/", lang);
+const altHref = localizePath("/writing", other);
+---
+
+<Base
+  lang={lang}
+  title={`${t.writing.indexKicker} — Sharon Sethi`}
+  altHref={altHref}
+  altLang={other}
+>
+  <header class="bar">
+    <div class="container bar__inner">
+      <a class="brand" href={homeHref}><span class="dot"></span>Sharon Sethi</a>
+      <a class="bar__back" href={`${homeHref}#writing`}>&larr; {t.writing.back}</a>
+    </div>
+  </header>
+
+  <main class="section">
+    <div class="container wrap">
+      <header class="head">
+        <p class="mono">{t.writing.indexKicker}</p>
+        <h1>{t.writing.indexTitle}</h1>
+      </header>
+
+      {
+        posts.length === 0 ? (
+          <p class="empty">{t.writing.empty}</p>
+        ) : (
+          <ul class="wlist">
+            {posts.map((p) => (
+              <li>
+                <a class="witem" href={p.href}>
+                  <span class="mono witem__date">{p.date}</span>
+                  <span class="witem__body">
+                    <span class="witem__title">{p.title}</span>
+                    <span class="witem__hook">{p.hook}</span>
+                  </span>
+                  <span class="witem__arrow" aria-hidden="true">&rarr;</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container site-footer__inner">
+      <span class="mono">{t.footer.copyright}</span>
+      <span class="mono">{t.footer.tagline}</span>
+    </div>
+  </footer>
+</Base>
+
+<style>
+  .bar {
+    border-bottom: 1px solid var(--line);
+    height: var(--header-h);
+    display: flex;
+    align-items: center;
+  }
+  .bar__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .bar__back {
+    font-size: 14px;
+    color: var(--slate);
+    text-decoration: none;
+  }
+  .bar__back:hover {
+    color: var(--ink);
+  }
+  .wrap {
+    max-width: 760px;
+  }
+  .head {
+    padding-block: clamp(32px, 6vw, 64px) clamp(24px, 4vw, 40px);
+  }
+  .head h1 {
+    margin-top: 16px;
+    font-size: clamp(2rem, 5vw, 3rem);
+    max-width: 22ch;
+  }
+  .empty {
+    color: var(--slate);
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+  }
+  .wlist {
+    list-style: none;
+    padding: 0;
+  }
+  .witem {
+    display: grid;
+    grid-template-columns: 84px minmax(0, 1fr) 28px;
+    gap: 24px;
+    align-items: baseline;
+    padding-block: 26px;
+    border-top: 1px solid var(--line);
+    text-decoration: none;
+    color: inherit;
+    transition: padding-left 0.25s var(--ease);
+  }
+  .wlist li:last-child .witem {
+    border-bottom: 1px solid var(--line);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .witem:hover {
+      padding-left: 10px;
+    }
+  }
+  .witem__date {
+    padding-top: 6px;
+  }
+  .witem__title {
+    display: block;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(1.2rem, 2.2vw, 1.6rem);
+    letter-spacing: -0.015em;
+  }
+  .witem__hook {
+    display: block;
+    margin-top: 6px;
+    color: var(--slate);
+  }
+  .witem__arrow {
+    color: var(--slate);
+    font-size: 18px;
+    align-self: center;
+  }
+  .witem:hover .witem__arrow {
+    color: var(--signal);
+  }
+  .site-footer {
+    border-top: 1px solid var(--line);
+    padding-block: 28px;
+    margin-top: clamp(48px, 8vw, 96px);
+  }
+  .site-footer__inner {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  @media (max-width: 520px) {
+    .witem {
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+    .witem__arrow {
+      display: none;
+    }
+  }
+</style>

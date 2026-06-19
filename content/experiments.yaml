@@ -1,0 +1,28 @@
+# ============================================================
+#  EXPERIMENTS — edit this file, never the code.
+#  These show in the "Selected experiments" grid on the homepage.
+#  While the list is empty, the section shows "Coming soon".
+#
+#  To add one: copy the commented block below into the list and
+#  fill in the fields.
+#    tag        short category label (kept in English, e.g. AGENTS)
+#    title      English headline
+#    title_th   Thai headline (shown on the /th site)
+#    takeaway   English one-paragraph takeaway
+#    takeaway_th Thai takeaway
+#    featured   true on ONE item only — it becomes the big dark card
+#  Order here = order shown. The featured item is pulled to the top.
+# ============================================================
+
+experiments: []
+
+# --- template (uncomment and copy as many as you need) ---
+# experiments:
+#   - tag: AGENTS
+#     featured: true
+#     title: Your experiment headline
+#     title_th: หัวข้อการทดลองของคุณ
+#     takeaway: >-
+#       One short paragraph on the single takeaway worth keeping.
+#     takeaway_th: >-
+#       ข้อสรุปสั้น ๆ หนึ่งย่อหน้าที่ควรเก็บไว้

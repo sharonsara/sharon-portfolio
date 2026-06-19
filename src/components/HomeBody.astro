@@ -1,53 +1,38 @@
 ---
-// Shared homepage content. The nav variant is passed in as a slot by each page,
-// so all three comparison routes share identical body copy and layout.
+// Shared homepage body. The nav variant is passed in as a slot by each page.
+// Copy comes from the i18n dictionary; experiments + writing come from
+// /content. Pass `lang` to render the English (/) or Thai (/th) version.
 import WorkSection from "./WorkSection.astro";
+import RigSection from "./RigSection.astro";
+import { useTranslations, localizePath, type Lang } from "../i18n/ui";
+import { loadExperiments } from "../lib/content";
+import { listArticles } from "../lib/articles";
 
-const experiments = [
-  {
-    tag: "AGENTS",
-    title: "Building a 5-agent research crew with the Claude Agent SDK",
-    takeaway:
-      "Splitting one big prompt into specialised agents cut my error rate hard. Here's when orchestration actually beats a single model — and when it's just overhead.",
-    featured: true,
-  },
-  {
-    tag: "COMPUTER USE",
-    title: "I let a model drive my browser for a week",
-    takeaway:
-      "Promising, not magic. It nailed repetitive forms and fell apart on anything ambiguous. A plain-English guide to where it helps today.",
-  },
-  {
-    tag: "VOICE",
-    title: "Real-time voice agents that don't sound like robots",
-    takeaway:
-      "Latency is the whole game. What I changed to get a back-and-forth that feels like a phone call, not a walkie-talkie.",
-  },
-  {
-    tag: "RAG",
-    title: "Why my first RAG setup lied with total confidence",
-    takeaway:
-      "Retrieval was fine — the prompt wasn't. The two fixes that stopped the hallucinations, explained without the jargon.",
-  },
+interface Props {
+  lang?: Lang;
+}
+const { lang = "en" } = Astro.props;
+const t = useTranslations(lang);
+
+// Social links — replace the # with your real profile URLs (that's the only edit needed).
+const socials = [
+  { label: "LinkedIn", href: "https://linkedin.com/in/sharon-sethi-eraya777" },
+  { label: "GitHub", href: "https://github.com/sharonsara" },
+  { label: "X", href: "https://x.com/sharonsara25" },
 ];
 
-const writing = [
-  {
-    date: "2026.05",
-    title: "You don't need to learn to code to use AI well",
-    hook: "The skill that actually matters is describing what you want clearly. Coding is optional.",
-  },
-  {
-    date: "2026.04",
-    title: "“Agentic”, in plain English",
-    hook: "Everyone's saying it. Here's what it means when you strip the buzzword off.",
-  },
-  {
-    date: "2026.03",
-    title: "How I test a brand-new AI tool in 30 minutes",
-    hook: "My exact checklist for deciding whether something is useful or just a demo.",
-  },
-];
+// inline icon paths (24x24 viewBox) so we ship no icon library
+const icons: Record<string, string> = {
+  LinkedIn:
+    '<path d="M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.36V9h3.41v1.56h.05c.47-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12zM7.12 20.45H3.55V9h3.57v11.45zM22.22 0H1.77C.8 0 0 .78 0 1.74v20.52C0 23.22.8 24 1.77 24h20.45c.97 0 1.78-.78 1.78-1.74V1.74C24 .78 23.19 0 22.22 0z"/>',
+  GitHub:
+    '<path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2 0 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2 0-.4-.5-1.6.2-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.7 18.3 5 18.3 5c.7 1.6.2 2.8.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.5.3.9 1 .9 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3z"/>',
+  X: '<path d="M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.41l-5.8-7.58-6.64 7.58H.46l8.6-9.83L0 1.15h7.6l5.24 6.93 6.06-6.93zm-1.29 19.5h2.04L6.48 3.24H4.3L17.61 20.65z"/>',
+};
+
+const experiments = loadExperiments(lang);
+const writing = (await listArticles(lang)).slice(0, 3);
+const writingIndexHref = localizePath("/writing", lang);
 ---
 
 <main>
@@ -55,18 +40,15 @@ const writing = [
   <section id="home" class="section hero reveal">
     <div class="container hero__grid">
       <div class="hero__copy">
-        <p class="mono hero__eyebrow">Agentic AI orchestrator</p>
+        <p class="mono hero__eyebrow">{t.hero.eyebrow}</p>
         <h1 class="hero__title">
-          I break in the newest AI tools, then translate them into
-          <span class="hero__mark">plain English</span>.
+          {t.hero.titleLead}
+          <span class="hero__mark">{t.hero.titleMark}</span>{t.hero.titleTail}
         </h1>
-        <p class="hero__sub">
-          Half engineer, half creator. I orchestrate AI systems and write about
-          what actually matters — so you don't have to decode the hype.
-        </p>
+        <p class="hero__sub">{t.hero.sub}</p>
         <div class="hero__cta">
-          <a class="btn btn--primary" href="#experiments">Read the experiments</a>
-          <a class="btn btn--ghost" href="#writing">Browse the writing</a>
+          <a class="btn btn--primary" href="#experiments">{t.hero.ctaPrimary}</a>
+          <a class="btn btn--ghost" href="#writing">{t.hero.ctaGhost}</a>
         </div>
       </div>
 
@@ -86,57 +68,90 @@ const writing = [
   <section id="experiments" class="section block reveal">
     <div class="container">
       <header class="block__head">
-        <h2>Selected experiments</h2>
-        <p class="block__lead">
-          Tools I've put real hours into, each with the one takeaway worth keeping.
-        </p>
+        <h2>{t.experiments.heading}</h2>
+        <p class="block__lead">{t.experiments.lead}</p>
       </header>
 
-      <div class="xgrid">
-        {
-          experiments.map((x) => (
-            <article class={`xcard${x.featured ? " xcard--featured" : ""}`}>
-              <p class="mono xcard__tag">{x.tag}</p>
-              <h3 class="xcard__title">{x.title}</h3>
-              <p class="xcard__takeaway">{x.takeaway}</p>
-              <span class="xcard__more">Read the experiment &rarr;</span>
-            </article>
-          ))
-        }
-      </div>
+      {
+        experiments.length === 0 ? (
+          <p class="block__empty">{t.experiments.empty}</p>
+        ) : (
+          <div class="xgrid">
+            {experiments.map((x) => (
+              <article class={`xcard${x.featured ? " xcard--featured" : ""}`}>
+                <p class="mono xcard__tag">{x.tag}</p>
+                <h3 class="xcard__title">{x.title}</h3>
+                <p class="xcard__takeaway">{x.takeaway}</p>
+                <span class="xcard__more">{t.experiments.more} &rarr;</span>
+              </article>
+            ))}
+          </div>
+        )
+      }
     </div>
   </section>
+
+  <!-- MY RIG (favorite AI tools as faders) -->
+  <RigSection lang={lang} />
 
   <!-- WORK (videos made for company channel) -->
-  <WorkSection />
-
-  <!-- TRANSLATION STRIP -->
-  <section id="translate" class="section strip reveal">
-    <div class="container">
-      <p class="strip__line">
-        I translate AI from <em>engineer-speak</em> into language anyone can use.
-      </p>
-    </div>
-  </section>
+  <WorkSection lang={lang} />
 
   <!-- WRITING -->
   <section id="writing" class="section block reveal">
     <div class="container">
       <header class="block__head">
-        <h2>Latest writing</h2>
-        <p class="block__lead">Short reads. No jargon. Written like I'd explain it over coffee.</p>
+        <h2>{t.writing.heading}</h2>
+        <p class="block__lead">{t.writing.lead}</p>
       </header>
 
-      <ul class="wlist">
+      {
+        writing.length === 0 ? (
+          <p class="wlist__empty">{t.writing.empty}</p>
+        ) : (
+          <>
+            <ul class="wlist">
+              {writing.map((p) => (
+                <li>
+                  <a class="witem" href={p.href}>
+                    <span class="mono witem__date">{p.date}</span>
+                    <span class="witem__body">
+                      <span class="witem__title">{p.title}</span>
+                      <span class="witem__hook">{p.hook}</span>
+                    </span>
+                    <span class="witem__arrow" aria-hidden="true">&rarr;</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+
+            <a class="wlist__all" href={writingIndexHref}>{t.writing.all} &rarr;</a>
+          </>
+        )
+      }
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="section contact reveal">
+    <div class="container contact__inner">
+      <h2 class="contact__title">{t.contact.title}</h2>
+      <p class="contact__sub">{t.contact.sub}</p>
+      <a class="btn btn--primary" href="mailto:sharonsethi25@gmail.com">{t.contact.email}</a>
+
+      <ul class="socials" aria-label="Sharon on social media">
         {
-          writing.map((p) => (
-            <li class="witem">
-              <span class="mono witem__date">{p.date}</span>
-              <span class="witem__body">
-                <span class="witem__title">{p.title}</span>
-                <span class="witem__hook">{p.hook}</span>
-              </span>
-              <span class="witem__arrow" aria-hidden="true">&rarr;</span>
+          socials.map((s) => (
+            <li>
+              <a
+                class="socials__link"
+                href={s.href}
+                aria-label={s.label}
+                target="_blank"
+                rel="me noopener"
+              >
+                <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" set:html={icons[s.label]} />
+              </a>
             </li>
           ))
         }
@@ -144,21 +159,25 @@ const writing = [
     </div>
   </section>
 
-  <!-- CONTACT -->
-  <section id="contact" class="section contact reveal">
-    <div class="container contact__inner">
-      <h2 class="contact__title">Working on something with AI in it?</h2>
-      <p class="contact__sub">
-        I take on a few collaborations at a time. Tell me what you're building.
-      </p>
-      <a class="btn btn--primary" href="mailto:sharonsethi25@gmail.com">Email Sharon</a>
-    </div>
-  </section>
-
   <footer class="site-footer">
     <div class="container site-footer__inner">
-      <span class="mono">&copy; 2026 Sharon Sethi</span>
-      <span class="mono">Built between code and storytelling</span>
+      <ul class="socials socials--sm" aria-label="Sharon on social media">
+        {
+          socials.map((s) => (
+            <li>
+              <a
+                class="socials__link"
+                href={s.href}
+                aria-label={s.label}
+                target="_blank"
+                rel="me noopener"
+              >
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" set:html={icons[s.label]} />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
     </div>
   </footer>
 </main>
@@ -252,6 +271,11 @@ const writing = [
     color: var(--slate);
     max-width: 52ch;
   }
+  .block__empty {
+    color: var(--slate);
+    font-size: 1.1rem;
+    padding-block: 8px;
+  }
 
   /* ---------- EXPERIMENTS (asymmetric signal-log, not equal cards) ---------- */
   .xgrid {
@@ -342,9 +366,11 @@ const writing = [
     align-items: baseline;
     padding-block: 26px;
     border-top: 1px solid var(--line);
+    text-decoration: none;
+    color: inherit;
     transition: padding-left 0.25s var(--ease);
   }
-  .witem:last-child {
+  .wlist li:last-child .witem {
     border-bottom: 1px solid var(--line);
   }
   @media (prefers-reduced-motion: no-preference) {
@@ -375,6 +401,22 @@ const writing = [
   .witem:hover .witem__arrow {
     color: var(--signal);
   }
+  .wlist__empty {
+    color: var(--slate);
+    padding-block: 8px 4px;
+    border-top: 1px solid var(--line);
+  }
+  .wlist__all {
+    display: inline-block;
+    margin-top: 28px;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--signal);
+    text-decoration: none;
+  }
+  .wlist__all:hover {
+    text-decoration: underline;
+  }
 
   /* ---------- CONTACT ---------- */
   .contact {
@@ -394,6 +436,45 @@ const writing = [
     color: var(--slate);
     max-width: 44ch;
     margin-inline: auto;
+  }
+
+  /* ---------- SOCIALS ---------- */
+  .socials {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    gap: 10px;
+  }
+  .contact .socials {
+    margin-top: 32px;
+    justify-content: center;
+  }
+  .socials__link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    border: 1px solid var(--line);
+    border-radius: var(--radius-pill);
+    color: var(--slate);
+    transition: color 0.2s ease, border-color 0.2s ease, transform 0.18s var(--ease);
+  }
+  .socials__link svg {
+    fill: currentColor;
+  }
+  .socials__link:hover {
+    color: var(--signal);
+    border-color: var(--signal);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .socials__link:hover {
+      transform: translateY(-2px);
+    }
+  }
+  .socials--sm .socials__link {
+    width: 34px;
+    height: 34px;
   }
 
   /* ---------- FOOTER ---------- */

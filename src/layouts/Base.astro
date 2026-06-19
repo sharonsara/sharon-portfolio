@@ -2,25 +2,31 @@
 import "@fontsource-variable/bricolage-grotesque";
 import "@fontsource-variable/geist";
 import "../styles/global.css";
+import { useTranslations, type Lang } from "../i18n/ui";
 
 interface Props {
+  lang?: Lang;
   title?: string;
   description?: string;
+  // path of this same page in the OTHER language, for hreflang (e.g. "/th")
+  altHref?: string;
+  altLang?: Lang;
 }
 
-const {
-  title = "Sharon Sethi — agentic AI orchestrator",
-  description = "I test new AI tools the day they drop, then translate what actually matters into plain English. Half engineer, half creator.",
-} = Astro.props;
+const { lang = "en", altHref, altLang } = Astro.props;
+const t = useTranslations(lang);
+const title = Astro.props.title ?? t.meta.title;
+const description = Astro.props.description ?? t.meta.description;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={lang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content={description} />
     <title>{title}</title>
+    {altHref && altLang && <link rel="alternate" hreflang={altLang} href={altHref} />}
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><circle cx='8' cy='8' r='5' fill='%23e8442a'/></svg>" />
   </head>
   <body>

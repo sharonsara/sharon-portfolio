@@ -1,0 +1,193 @@
+---
+import Base from "../layouts/Base.astro";
+import {
+  useTranslations,
+  localizePath,
+  otherLang,
+  type Lang,
+} from "../i18n/ui";
+import type { Article } from "../lib/articles";
+
+interface Props {
+  lang?: Lang;
+  article: Article;
+}
+const { lang = "en", article } = Astro.props;
+const t = useTranslations(lang);
+const other = otherLang(lang);
+
+const writingHref = localizePath("/writing", lang);
+const contactHref = `${localizePath("/", lang)}#contact`;
+// the same article in the other language (only linked when it exists)
+const altHref = localizePath(`/writing/${article.key}`, other);
+
+const longDate = article.date.toLocaleDateString(
+  lang === "th" ? "th-TH" : "en-US",
+  { year: "numeric", month: "long", day: "numeric" }
+);
+---
+
+<Base
+  lang={lang}
+  title={`${article.title} — Sharon Sethi`}
+  description={article.hook}
+  altHref={altHref}
+  altLang={other}
+>
+  <header class="bar">
+    <div class="container bar__inner">
+      <a class="brand" href={localizePath("/", lang)}><span class="dot"></span>Sharon Sethi</a>
+      <a class="bar__back" href={writingHref}>&larr; {t.writing.backAll}</a>
+    </div>
+  </header>
+
+  <main class="section">
+    <article class="container post">
+      <p class="mono post__date">{longDate}</p>
+      <h1 class="post__title">{article.title}</h1>
+      <p class="post__hook">{article.hook}</p>
+      <div class="prose" set:html={article.html}></div>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container site-footer__inner">
+      <a class="btn btn--ghost" href={writingHref}>&larr; {t.writing.backToAll}</a>
+      <a class="btn btn--primary" href={contactHref}>{t.writing.cta}</a>
+    </div>
+  </footer>
+</Base>
+
+<style>
+  .bar {
+    border-bottom: 1px solid var(--line);
+    height: var(--header-h);
+    display: flex;
+    align-items: center;
+  }
+  .bar__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .bar__back {
+    font-size: 14px;
+    color: var(--slate);
+    text-decoration: none;
+  }
+  .bar__back:hover {
+    color: var(--ink);
+  }
+  .post {
+    max-width: 680px;
+    padding-block: clamp(32px, 6vw, 64px);
+  }
+  .post__title {
+    margin-top: 14px;
+    font-size: clamp(2.1rem, 5.4vw, 3.2rem);
+  }
+  .post__hook {
+    margin-top: 18px;
+    color: var(--slate);
+    font-size: clamp(1.1rem, 1.8vw, 1.3rem);
+    max-width: 50ch;
+  }
+
+  /* ---- markdown prose ---- */
+  .prose {
+    margin-top: clamp(32px, 5vw, 48px);
+    border-top: 1px solid var(--line);
+    padding-top: clamp(28px, 4vw, 40px);
+    font-size: 1.075rem;
+    line-height: 1.75;
+  }
+  .prose :global(h2) {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(1.4rem, 3vw, 1.9rem);
+    letter-spacing: -0.02em;
+    margin-top: 2em;
+    margin-bottom: 0.5em;
+  }
+  .prose :global(p) {
+    margin-bottom: 1.2em;
+  }
+  .prose :global(ul),
+  .prose :global(ol) {
+    margin: 0 0 1.4em 1.2em;
+    padding-left: 0.6em;
+  }
+  .prose :global(li) {
+    margin-bottom: 0.5em;
+    padding-left: 0.2em;
+  }
+  .prose :global(li)::marker {
+    color: var(--signal);
+  }
+  .prose :global(a) {
+    color: var(--signal);
+    text-underline-offset: 3px;
+  }
+  .prose :global(strong) {
+    font-weight: 600;
+  }
+  .prose :global(code) {
+    font-family: var(--font-mono);
+    font-size: 0.88em;
+    background: var(--panel);
+    padding: 0.15em 0.4em;
+    border-radius: 5px;
+  }
+  .prose :global(pre) {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 20px 22px;
+    border-radius: var(--radius-surface);
+    overflow-x: auto;
+    margin-bottom: 1.4em;
+  }
+  .prose :global(pre code) {
+    background: none;
+    padding: 0;
+    font-size: 0.92em;
+  }
+  .prose :global(blockquote) {
+    border-left: 3px solid var(--signal);
+    padding-left: 18px;
+    margin: 0 0 1.4em;
+    color: var(--slate);
+    font-style: italic;
+  }
+  .prose :global(table) {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    border-collapse: collapse;
+    margin-bottom: 1.6em;
+    font-size: 0.95em;
+  }
+  .prose :global(th),
+  .prose :global(td) {
+    border: 1px solid var(--line);
+    padding: 10px 14px;
+    text-align: left;
+    vertical-align: top;
+  }
+  .prose :global(thead th) {
+    background: var(--panel);
+    font-weight: 600;
+  }
+
+  .site-footer {
+    border-top: 1px solid var(--line);
+    padding-block: 28px;
+    margin-top: clamp(48px, 8vw, 96px);
+  }
+  .site-footer__inner {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+</style>

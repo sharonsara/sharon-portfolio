@@ -1,0 +1,28 @@
+# ============================================================
+#  MY RIG — favorite AI tools, shown as faders on the homepage.
+#  Edit this file, never the code. Order here = order on the board.
+#
+#  Per tool:
+#    name   tool name (kept in English on both sites)
+#    model  optional model chip, e.g. GPT-5.5 (omit if none)
+#    for    short "what it's for" label under the fader (1–4 words)
+#    why    one line in your voice, shown under the fader
+#    use    how often you reach for it — sets the fader height:
+#             daily   = rides highest
+#             weekly  = mid
+#             testing = low (something you're still trialing)
+#
+#  Add a tool by copying a block. 4–6 looks best on the board.
+# ============================================================
+
+tools:
+  - name: Claude
+    for: writing · sheets · research
+    why: The one I keep open all day — writing, filling out sheets, and chasing down research without the busywork.
+    use: daily
+
+  - name: ChatGPT
+    model: GPT-5.5
+    for: image generation
+    why: When I need an image, the 5.5 model just gets it — nothing else comes close yet.
+    use: weekly

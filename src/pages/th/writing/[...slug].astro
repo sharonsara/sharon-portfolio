@@ -1,0 +1,16 @@
+---
+import { articleKeys, getArticle } from "../../../lib/articles";
+import WritingArticle from "../../../components/WritingArticle.astro";
+
+export async function getStaticPaths() {
+  const keys = await articleKeys("th");
+  const articles = await Promise.all(keys.map((k) => getArticle("th", k)));
+  return articles
+    .filter((a) => a !== null)
+    .map((a) => ({ params: { slug: a!.key }, props: { article: a } }));
+}
+
+const { article } = Astro.props;
+---
+
+<WritingArticle lang="th" article={article} />

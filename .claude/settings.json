@@ -19,7 +19,25 @@
       "Bash(git commit -q -m ' *)",
       "Bash(git push *)",
       "Bash(chmod +x save.sh)",
-      "Bash(./save.sh \"chore: add one-command save script\")"
+      "Bash(./save.sh \"chore: add one-command save script\")",
+      "Bash(xargs ls -la)",
+      "Bash(awk '{print $5, $9}')",
+      "Bash(git commit -q -m 'feat: markdown-driven writing section + social links *)",
+      "Bash(git mv *)",
+      "Bash(git checkout *)",
+      "Bash(git reset *)",
+      "Bash(git commit -q -m 'feat: bilingual EN/TH site + editable experiments *)",
+      "Bash(lsof -nP -iTCP -sTCP:LISTEN)",
+      "Bash(awk 'NR==1 || /node/')",
+      "Bash(git rm *)",
+      "Bash(curl -sL \"https://docs.google.com/spreadsheets/d/1FuIyJVyC6x-Ga7g2Lc-12aLdaSY14EJx-qEgbsrfk10/gviz/tq?tqx=out:csv&gid=1310791144\")",
+      "mcp__claude_ai_Google_Drive__read_file_content",
+      "Bash(curl -sL \"https://docs.google.com/document/d/1we_IJY8T-Oh7QfWT4gVmIK9_gxIOJEx1bY3df6qEAZk/export?format=md\")",
+      "Bash(curl -sL \"https://docs.google.com/document/d/1vkfMCQXBDLmkorLfCxiyywIQY3BHObekDI3suT8xLEg/export?format=md\")",
+      "Bash(node -e \"import\\('@astrojs/markdown-remark'\\).then\\(m=>console.log\\('exports:', Object.keys\\(m\\).filter\\(k=>/process|render/i.test\\(k\\)\\)\\)\\)\")",
+      "Bash(grep -o 'strip__name[^§]\\\\{0,40\\\\}' dist/index.html)",
+      "Bash(git ls-remote *)",
+      "Bash(git commit *)"
     ]
   }
 }

@@ -1,14 +1,21 @@
 ---
 // Variant B — "Signal tuner / frequency index"
-// Tabs are stations along a baseline; the tuned station ticks up in signal,
-// and a mono readout (updated by the shared scrollspy) shows the current station.
+// Tabs are stations along a baseline; the tuned station ticks up in signal.
+import { useTranslations, type Lang } from "../../i18n/ui";
+
+interface Props {
+  lang?: Lang;
+}
+const { lang = "en" } = Astro.props;
+const t = useTranslations(lang);
+
 const items = [
-  { id: "home", label: "Home" },
-  { id: "experiments", label: "Experiments" },
-  { id: "work", label: "Work" },
-  { id: "writing", label: "Writing" },
-  { id: "translate", label: "About" },
-  { id: "contact", label: "Contact" },
+  { id: "home", label: t.nav.home },
+  { id: "experiments", label: t.nav.experiments },
+  { id: "tools", label: t.nav.tools },
+  { id: "work", label: t.nav.work },
+  { id: "writing", label: t.nav.writing },
+  { id: "contact", label: t.nav.contact },
 ];
 ---
 
@@ -20,7 +27,6 @@ const items = [
     </a>
 
     <div class="tuner-wrap">
-      <span class="mono readout" data-readout>Home · 01</span>
       <nav class="tnav" aria-label="Primary">
         {
           items.map((it, i) => (
@@ -46,11 +52,6 @@ const items = [
     flex-direction: column;
     align-items: flex-end;
     gap: 8px;
-  }
-  .readout {
-    color: var(--signal);
-    font-size: 10px;
-    letter-spacing: 0.16em;
   }
   .tnav {
     position: relative;
@@ -122,9 +123,6 @@ const items = [
   }
 
   @media (max-width: 640px) {
-    .readout {
-      display: none;
-    }
     .tnav {
       gap: 16px;
       overflow-x: auto;
