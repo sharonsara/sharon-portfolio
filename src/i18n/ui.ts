@@ -27,7 +27,7 @@ export const otherLang = (lang: Lang): Lang => (lang === "en" ? "th" : "en");
 const strings = {
   en: {
     meta: {
-      title: "Sharon Sethi — agentic AI orchestrator",
+      title: "Sharon Sethi — AI Agent orchestrator",
       description:
         "I test new AI tools the day they drop, then translate what actually matters into plain English. Half engineer, half creator. Based in Bangkok.",
     },
@@ -42,10 +42,10 @@ const strings = {
       languageLabel: "Language",
     },
     hero: {
-      eyebrow: "Agentic AI orchestrator · Bangkok",
-      titleLead: "I break in the newest AI tools, then translate them into",
-      titleMark: "plain English",
-      titleTail: ".",
+      eyebrow: "I'm Sharon Sethi, an AI Agent Orchestrator based in Bangkok.",
+      titleLead: "I try the latest AI tools, then share what they do in a language",
+      titleMark: "anyone can understand",
+      titleTail: ". In minutes, not in hours.",
       sub: "Half engineer, half creator, based in Bangkok. I orchestrate AI systems and write about what actually matters — so you don't have to decode the hype.",
       ctaPrimary: "Read the experiments",
       ctaGhost: "Browse the writing",
@@ -110,10 +110,10 @@ const strings = {
       languageLabel: "ภาษา",
     },
     hero: {
-      eyebrow: "ผู้ควบคุมระบบ AI เชิงเอเจนต์ · กรุงเทพฯ",
-      titleLead: "ฉันลองเล่นเครื่องมือ AI ใหม่ล่าสุด แล้วแปลมันออกมาเป็น",
-      titleMark: "ภาษาที่เข้าใจง่าย",
-      titleTail: "",
+      eyebrow: "ฉันชื่อ Sharon Sethi ผู้ควบคุมระบบ AI เชิงเอเจนต์ อยู่ที่กรุงเทพฯ",
+      titleLead: "ฉันลองเครื่องมือ AI ใหม่ล่าสุด แล้วเล่าให้ฟังว่ามันทำอะไรได้ ด้วย",
+      titleMark: "ภาษาที่ทุกคนเข้าใจ",
+      titleTail: " — ในไม่กี่นาที ไม่ใช่เป็นชั่วโมง",
       sub: "ครึ่งวิศวกร ครึ่งครีเอเตอร์ ใช้ชีวิตอยู่ที่กรุงเทพฯ ฉันออกแบบและควบคุมระบบ AI แล้วเขียนเล่าเฉพาะเรื่องที่สำคัญจริง ๆ เพื่อให้คุณไม่ต้องมานั่งถอดรหัสกระแสเอง",
       ctaPrimary: "อ่านการทดลอง",
       ctaGhost: "ดูงานเขียน",

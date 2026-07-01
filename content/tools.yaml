@@ -17,12 +17,12 @@
 
 tools:
   - name: Claude
-    for: writing · sheets · research
+    for: writing, spreadsheets & research
     why: The one I keep open all day — writing, filling out sheets, and chasing down research without the busywork.
     use: daily
 
   - name: ChatGPT
     model: GPT-5.5
-    for: image generation
+    for: making images
     why: When I need an image, the 5.5 model just gets it — nothing else comes close yet.
     use: weekly
