@@ -27,7 +27,7 @@ export const otherLang = (lang: Lang): Lang => (lang === "en" ? "th" : "en");
 const strings = {
   en: {
     meta: {
-      title: "Sharon Sethi — agentic AI orchestrator",
+      title: "Sharon Sethi — AI Agent orchestrator",
       description:
         "I test new AI tools the day they drop, then translate what actually matters into plain English. Half engineer, half creator. Based in Bangkok.",
     },
@@ -42,7 +42,7 @@ const strings = {
       languageLabel: "Language",
     },
     hero: {
-      eyebrow: "I'm Sharon Sethi, an Agentic AI Orchestrator based in Bangkok.",
+      eyebrow: "I'm Sharon Sethi, an AI Agent Orchestrator based in Bangkok.",
       titleLead: "I try the latest AI tools, then share what they do in a language",
       titleMark: "anyone can understand",
       titleTail: ". In minutes, not in hours.",
